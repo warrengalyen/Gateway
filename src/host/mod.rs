@@ -1,3 +1,7 @@
+//! ## Host
+//!
+//! `host` is the module which provides functionalities to host file system
+
 /*
 *
 *   Copyright (C) 2021 Warren Galyen
@@ -18,7 +22,3 @@
 *   along with Gateway.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-
-pub mod filetransfer;
-pub mod fs;
-pub mod host;
