@@ -1,0 +1,21 @@
+[package]
+name = "gateway"
+version = "0.1.0"
+authors = ["Warren Galyen"]
+edition = "2018"
+license = "GPL-3.0"
+keywords = ["scp-client", "sftp-client", "ftp-client", "winscp", "command-line-utility"]
+categories = ["command-line-utilities"]
+description = "a SCP/SFTP/FTPS client for command line with an integrated UI to explore the remote file system. Basically WinSCP on a terminal."
+homepage = "https://github.com/warrengalyen/Gateway"
+repository = "https://github.com/warrengalyen/Gateway"
+readme = "README.md"
+
+[dependencies]
+crossterm = "0.18.2"
+getopts = "0.2.21"
+tui = { version = "0.12.0", features = ["crossterm"], default-features = false }
+
+[[bin]]
+name = "gatewat"
+path = "src/main.rs"
