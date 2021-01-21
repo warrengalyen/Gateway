@@ -26,7 +26,7 @@ Basically, WinSCP on a terminal
 
 ## About Gateway
 
-Gateway is basically a porting of WinSCP to terminal. So basically is a terminal tool with an UI to connect to a remote server to retrieve and upload files. It works both on Linux, MacOS and Windows (TODO: double check) and supports SCP, SFTP and FTPs.
+Gateway is basically a porting of WinSCP to terminal. So basically is a terminal tool with an UI to connect to a remote server to retrieve and upload files. It works both on Linux, MacOS and Windows (TODO: double check) and supports SFTP and FTPs.
 
 ### Why Gateway
 
@@ -35,7 +35,6 @@ It happens very often to me when using SCP at work to forget the path of a file 
 ## Features
 
 - Different communication protocols
-  - SCP
   - SFTP
   - FTPS
 - Practical user interface to explore the remote machine file system and to select the files to upload and download
