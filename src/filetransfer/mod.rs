@@ -23,8 +23,8 @@
 *
 */
 
-use std::path::PathBuf;
 use std::fs::File;
+use std::path::PathBuf;
 
 use crate::fs::FsEntry;
 
@@ -45,55 +45,66 @@ pub enum FileTransferProtocol {
 
 #[derive(PartialEq, Clone)]
 pub enum FileTransferError {
-
+    ConnectionError,
+    BadAddress,
+    AuthenticationFailed,
+    NoSuchFileOrDirectory,
+    DirStatFailed,
+    FileReadonly,
+    DownloadError,
+    UnknownError,
 }
 
 /// ## FileTransfer
-/// 
+///
 /// File transfer trait must be implemented by all the file transfers and defines the method used by a generic file transfer
 
 pub trait FileTransfer {
-
     /// ### connect
-    /// 
+    ///
     /// Connect to the remote server
 
-    fn connect(&mut self, address: String, port: usize, username: Option<String>, password: Option<String>) -> Result<(), FileTransferError>;
+    fn connect(
+        &mut self,
+        address: String,
+        port: usize,
+        username: Option<String>,
+        password: Option<String>,
+    ) -> Result<(), FileTransferError>;
 
     /// ### disconnect
-    /// 
+    ///
     /// Disconnect from the remote server
 
     fn disconnect(&mut self) -> Result<(), FileTransferError>;
 
     /// ### pwd
-    /// 
+    ///
     /// Print working directory
 
     fn pwd(&self) -> Result<PathBuf, FileTransferError>;
 
     /// ### change_dir
-    /// 
+    ///
     /// Change working directory
 
     fn change_dir(&mut self, dir: PathBuf) -> Result<PathBuf, FileTransferError>;
 
     /// ### list_dir
-    /// 
+    ///
     /// List directory entries
 
     fn list_dir(&self) -> Result<Vec<FsEntry>, FileTransferError>;
 
     /// ### send_file
-    /// 
+    ///
     /// Send file to remote
     /// File name is referred to the name of the file as it will be saved
     /// Data contains the file data
     fn send_file(&self, file_name: PathBuf, file: File) -> Result<(), FileTransferError>;
 
     /// ### recv_file
-    /// 
+    ///
     /// Receive file from remote with provided name
     fn recv_file(&self, file_name: PathBuf) -> Result<Vec<u8>, FileTransferError>;
-
 }

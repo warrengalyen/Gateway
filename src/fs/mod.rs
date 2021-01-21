@@ -24,26 +24,28 @@
 */
 
 use std::path::PathBuf;
-use std::time::Instant;
+use std::time::SystemTime;
 
 /// ## FsEntry
-/// 
+///
 /// FsEntry represents a generic entry in a directory
 
+#[derive(Clone)]
 pub enum FsEntry {
     Directory(FsDirectory),
-    File(FsFile)
+    File(FsFile),
 }
 
 /// ## FsDirectory
 ///
 /// Directory provides an interface to file system directories
 
+#[derive(Clone)]
 pub struct FsDirectory {
     pub name: PathBuf,
-    pub last_change_time: Instant,
-    pub last_access_time: Instant,
-    pub creation_time: Instant,
+    pub last_change_time: SystemTime,
+    pub last_access_time: SystemTime,
+    pub creation_time: SystemTime,
     pub readonly: bool,
     pub symlink: Option<PathBuf>,       // UNIX only
     pub user: Option<String>,           // UNIX only
@@ -55,13 +57,14 @@ pub struct FsDirectory {
 ///
 /// FsFile provides an interface to file system files
 
+#[derive(Clone)]
 pub struct FsFile {
     pub name: PathBuf,
-    pub last_change_time: Instant,
-    pub last_access_time: Instant,
-    pub creation_time: Instant,
+    pub last_change_time: SystemTime,
+    pub last_access_time: SystemTime,
+    pub creation_time: SystemTime,
     pub size: usize,
-    pub ftype: String, // File type
+    pub ftype: Option<String>, // File type
     pub readonly: bool,
     pub symlink: Option<PathBuf>,       // UNIX only
     pub user: Option<String>,           // UNIX only
