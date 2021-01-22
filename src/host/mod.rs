@@ -283,6 +283,7 @@ impl Localhost {
                         // Is dir
                         FsEntry::Directory(FsDirectory {
                             name: file_name,
+                            abs_path: path,
                             last_change_time: attr.modified().unwrap_or(SystemTime::UNIX_EPOCH),
                             last_access_time: attr.accessed().unwrap_or(SystemTime::UNIX_EPOCH),
                             creation_time: attr.created().unwrap_or(SystemTime::UNIX_EPOCH),
@@ -304,6 +305,7 @@ impl Localhost {
                         };
                         FsEntry::File(FsFile {
                             name: file_name,
+                            abs_path: path,
                             last_change_time: attr.modified().unwrap_or(SystemTime::UNIX_EPOCH),
                             last_access_time: attr.accessed().unwrap_or(SystemTime::UNIX_EPOCH),
                             creation_time: attr.created().unwrap_or(SystemTime::UNIX_EPOCH),
@@ -347,6 +349,7 @@ impl Localhost {
                         // Is dir
                         FsEntry::Directory(FsDirectory {
                             name: file_name,
+                            abs_path: path,
                             last_change_time: attr.modified().unwrap_or(SystemTime::UNIX_EPOCH),
                             last_access_time: attr.accessed().unwrap_or(SystemTime::UNIX_EPOCH),
                             creation_time: attr.created().unwrap_or(SystemTime::UNIX_EPOCH),
@@ -365,6 +368,7 @@ impl Localhost {
                         };
                         FsEntry::File(FsFile {
                             name: file_name,
+                            abs_path: path,
                             last_change_time: attr.modified().unwrap_or(SystemTime::UNIX_EPOCH),
                             last_access_time: attr.accessed().unwrap_or(SystemTime::UNIX_EPOCH),
                             creation_time: attr.created().unwrap_or(SystemTime::UNIX_EPOCH),
