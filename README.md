@@ -1,5 +1,8 @@
 # Gateway
 
+(https://github.com/warrengalyen/Gateway/workflows/Lint/badge.svg)](https://github.com/warrengalyen/Lint/actions)
+(https://github.com/warrengalyen/Gateway/workflows/Build/badge.svg)](https://github.com/warrengalyen/Build/actions)
+
 
 Basically, WinSCP on a terminal
 
