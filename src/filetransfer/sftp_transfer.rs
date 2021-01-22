@@ -474,5 +474,69 @@ mod tests {
     // TODO: use test.rebex.net with user 'demo' and password 'password'
 
     #[test]
-    fn test_filetransfer_sftp_new() {}
+    fn test_filetransfer_sftp_new() {
+        let client: SftpFileTransfer = SftpFileTransfer::new();
+        assert!(client.session.is_none());
+        assert!(client.sftp.is_none());
+        assert_eq!(client.wrkdir, PathBuf::from("~"));
+    }
+
+    #[test]
+    fn test_filetransfer_sftp_connect() {
+        let mut client: SftpFileTransfer = SftpFileTransfer::new();
+        assert!(client.connect(String::from("test.rebex.net"), 22, Some(String::from("demo")), Some(String::from("password"))).is_ok());
+        // Check session and sftp
+        assert!(client.session.is_some());
+        assert!(client.sftp.is_some());
+        assert_eq!(client.wrkdir, PathBuf::from("/"));
+        // Disconnect
+        assert!(client.disconnect().is_ok());
+    }
+
+    #[test]
+    fn test_filetransfer_sftp_bad_auth() {
+        let mut client: SftpFileTransfer = SftpFileTransfer::new();
+        assert!(client.connect(String::from("test.rebex.net"), 22, Some(String::from("demo")), Some(String::from("badpassword"))).is_err());
+    }
+
+    #[test]
+    fn test_filetransfer_sftp_no_credentials() {
+        let mut client: SftpFileTransfer = SftpFileTransfer::new();
+        assert!(client.connect(String::from("test.rebex.net"), 22, None, None).is_err());
+    }
+
+    #[test]
+    fn test_filetransfer_sftp_bad_server() {
+        let mut client: SftpFileTransfer = SftpFileTransfer::new();
+        assert!(client.connect(String::from("mybadserver.veryverybad.awful"), 22, None, None).is_err());
+    }
+
+    #[test]
+    fn test_filetransfer_sftp_pwd() {
+        let mut client: SftpFileTransfer = SftpFileTransfer::new();
+        assert!(client.connect(String::from("test.rebex.net"), 22, Some(String::from("demo")), Some(String::from("password"))).is_ok());
+        // Check session and sftp
+        assert!(client.session.is_some());
+        assert!(client.sftp.is_some());
+        assert_eq!(client.wrkdir, PathBuf::from("/"));
+        // Pwd
+        assert_eq!(client.wrkdir, client.pwd().ok().unwrap());
+        // Disconnect
+        assert!(client.disconnect().is_ok());
+    }
+
+    #[test]
+    fn test_filetransfer_sftp_mkdir() {
+        let mut client: SftpFileTransfer = SftpFileTransfer::new();
+        assert!(client.connect(String::from("test.rebex.net"), 22, Some(String::from("demo")), Some(String::from("password"))).is_ok());
+        let dir: String = String::from("foo");
+        // Mkdir
+        assert!(client.mkdir(dir).is_ok());
+        // cwd
+        assert!(client.change_dir(PathBuf::from("foo/").as_path()).is_ok());
+        assert_eq!(client.wrkdir, PathBuf::from("/foo"));
+        // Disconnect
+        assert!(client.disconnect().is_ok());
+    }
+
 }
