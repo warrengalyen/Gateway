@@ -97,12 +97,12 @@ pub trait FileTransfer {
     fn list_dir(&self) -> Result<Vec<FsEntry>, FileTransferError>;
 
     /// ### mkdir
-    /// 
+    ///
     /// Make directory
     fn mkdir(&self, dir: String) -> Result<(), FileTransferError>;
 
     /// ### remove
-    /// 
+    ///
     /// Remove a file or a directory
     fn remove(&self, file: FsEntry) -> Result<(), FileTransferError>;
 
