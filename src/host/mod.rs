@@ -32,7 +32,7 @@ extern crate users;
 #[cfg(any(unix, macos, linux))]
 use std::os::unix::fs::MetadataExt;
 #[cfg(any(unix, macos, linux))]
-use users::{get_group_by_gid, get_user_by_uid};
+// use users::{get_group_by_gid, get_user_by_uid};
 
 // Locals
 use crate::fs::{FsDirectory, FsEntry, FsFile};
@@ -267,6 +267,7 @@ impl Localhost {
                 let path: PathBuf = entry.path();
                 let attr: Metadata = fs::metadata(path.clone()).unwrap();
                 // Get user stuff
+                /*
                 let user: Option<String> = match get_user_by_uid(attr.uid()) {
                     Some(user) => Some(String::from(user.name().to_str().unwrap_or(""))),
                     None => None,
@@ -275,6 +276,7 @@ impl Localhost {
                     Some(group) => Some(String::from(group.name().to_str().unwrap_or(""))),
                     None => None,
                 };
+                */
                 let file_name: String =
                     String::from(path.file_name().unwrap().to_str().unwrap_or(""));
                 // Match dir / file
@@ -292,8 +294,8 @@ impl Localhost {
                                 Ok(p) => Some(p),
                                 Err(_) => None,
                             },
-                            user: user,
-                            group: group,
+                            user: Some(attr.uid()),
+                            group: Some(attr.gid()),
                             unix_pex: Some(self.u32_to_mode(attr.mode())),
                         })
                     }
@@ -316,8 +318,8 @@ impl Localhost {
                                 Ok(p) => Some(p),
                                 Err(_) => None,
                             },
-                            user: user,
-                            group: group,
+                            user: Some(attr.uid()),
+                            group: Some(attr.gid()),
                             unix_pex: Some(self.u32_to_mode(attr.mode())),
                         })
                     }
