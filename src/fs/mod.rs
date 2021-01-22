@@ -33,7 +33,7 @@ use std::time::SystemTime;
 #[derive(Clone, std::fmt::Debug)]
 pub enum FsEntry {
     Directory(FsDirectory),
-    File(FsFile),
+    File(FsFile)
 }
 
 /// ## FsDirectory

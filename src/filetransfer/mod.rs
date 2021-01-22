@@ -40,7 +40,6 @@ type ProgressCallback = fn(bytes_written: usize, size: usize);
 
 #[derive(PartialEq, Clone)]
 pub enum FileTransferProtocol {
-    Scp,
     Sftp,
     Ftps,
 }
@@ -49,7 +48,6 @@ pub enum FileTransferProtocol {
 ///
 /// FileTransferError defines the possible errors available for a file transfer
 
-#[derive(PartialEq, Clone)]
 pub enum FileTransferError {
     AuthenticationFailed,
     BadAddress,
@@ -73,13 +71,7 @@ pub trait FileTransfer {
     ///
     /// Connect to the remote server
 
-    fn connect(
-        &mut self,
-        address: String,
-        port: usize,
-        username: Option<String>,
-        password: Option<String>,
-    ) -> Result<(), FileTransferError>;
+    fn connect(&mut self, address: String, port: usize, username: Option<String>, password: Option<String>) -> Result<(), FileTransferError>;
 
     /// ### disconnect
     ///
