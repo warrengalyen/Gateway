@@ -23,8 +23,8 @@
 *
 */
 
-use std::path::{Path, PathBuf};
 use std::fs::File;
+use std::path::{Path, PathBuf};
 
 use crate::fs::FsEntry;
 
@@ -71,7 +71,13 @@ pub trait FileTransfer {
     ///
     /// Connect to the remote server
 
-    fn connect(&mut self, address: String, port: usize, username: Option<String>, password: Option<String>) -> Result<(), FileTransferError>;
+    fn connect(
+        &mut self,
+        address: String,
+        port: usize,
+        username: Option<String>,
+        password: Option<String>,
+    ) -> Result<(), FileTransferError>;
 
     /// ### disconnect
     ///
@@ -112,10 +118,20 @@ pub trait FileTransfer {
     /// Send file to remote
     /// File name is referred to the name of the file as it will be saved
     /// Data contains the file data
-    fn send_file(&self, file_name: &Path, file: &mut File, prog_cb: Option<ProgressCallback>) -> Result<(), FileTransferError>;
+    fn send_file(
+        &self,
+        file_name: &Path,
+        file: &mut File,
+        prog_cb: Option<ProgressCallback>,
+    ) -> Result<(), FileTransferError>;
 
     /// ### recv_file
     ///
     /// Receive file from remote with provided name
-    fn recv_file(&self, file_name: &Path, dest_file: &mut File, prog_cb: Option<ProgressCallback>) -> Result<(), FileTransferError>;
+    fn recv_file(
+        &self,
+        file_name: &Path,
+        dest_file: &mut File,
+        prog_cb: Option<ProgressCallback>,
+    ) -> Result<(), FileTransferError>;
 }

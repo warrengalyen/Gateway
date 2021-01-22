@@ -474,8 +474,5 @@ mod tests {
     // TODO: use test.rebex.net with user 'demo' and password 'password'
 
     #[test]
-    fn test_filetransfer_sftp_new() {
-
-    }
-
+    fn test_filetransfer_sftp_new() {}
 }
