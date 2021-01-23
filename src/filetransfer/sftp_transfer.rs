@@ -178,7 +178,7 @@ impl FileTransfer for SftpFileTransfer {
     }
 
     /// ### is_connected
-    /// 
+    ///
     /// Indicates whether the client is connected to remote
     fn is_connected(&self) -> bool {
         self.session.is_some()

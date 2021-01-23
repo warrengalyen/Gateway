@@ -24,6 +24,7 @@ const GATEWAY_AUTHORS: &str = env!("CARGO_PKG_AUTHORS");
 
 // Crates
 extern crate getopts;
+extern crate rpassword;
 
 // External libs
 use getopts::Options;
@@ -41,7 +42,7 @@ mod utils;
 
 // namespaces
 use activity_manager::{ActivityManager, NextActivity};
-use filetransfer::{FileTransfer, sftp_transfer::SftpFileTransfer};
+use filetransfer::{sftp_transfer::SftpFileTransfer, FileTransfer};
 use ui::activities::auth_activity::ScpProtocol;
 
 /// ### print_usage
@@ -88,89 +89,103 @@ fn main() {
         );
         std::process::exit(255);
     }
-   // Match protocol first
-   if let Some(val) = matches.opt_str("P") {
-    match val.as_str() {
-        "sftp" => {
-            protocol = ScpProtocol::Sftp;
-            // Set port to 22 as default
-            port = 22;
-            // Set default username to current
-            username = Some(whoami::username());
+    // Match protocol first
+    if let Some(val) = matches.opt_str("P") {
+        match val.as_str() {
+            "sftp" => {
+                protocol = ScpProtocol::Sftp;
+                // Set port to 22 as default
+                port = 22;
+                // Set default username to current
+                username = Some(whoami::username());
+            }
+            "ftp" => {
+                protocol = ScpProtocol::Ftp;
+                // Set port to 21
+                port = 21;
+            }
+            _ => {
+                eprintln!("Unknown protocol '{}'", val);
+                print_usage(opts);
+                std::process::exit(255);
+            }
         }
-        "ftp" => {
-            protocol = ScpProtocol::Ftp;
-            // Set port to 21
-            port = 21;
+    }
+    // Match ticks
+    if let Some(val) = matches.opt_str("T") {
+        match val.parse::<usize>() {
+            Ok(val) => ticks = Duration::from_micros(val as u64),
+            Err(_) => {
+                eprintln!("Ticks is not a number '{}'", val);
+                print_usage(opts);
+                std::process::exit(255);
+            }
         }
+    }
+    // Check free args
+    let extra_args: Vec<String> = matches.free.clone();
+    if let Some(remote) = extra_args.get(0) {
+        // Parse address
+        match utils::parse_remote_opt(remote) {
+            Ok((addr, portn, proto, user)) => {
+                // Set params
+                address = Some(addr);
+                port = portn;
+                protocol = proto;
+                username = user;
+            }
+            Err(err) => {
+                eprintln!("Bad address option: {}", err);
+                print_usage(opts);
+                std::process::exit(255);
+            }
+        }
+    }
+    // Prepare file transfer
+    let file_transfer: Box<dyn FileTransfer> = match protocol {
+        ScpProtocol::Sftp => Box::new(SftpFileTransfer::new()),
         _ => {
-            eprintln!("Unknown protocol '{}'", val);
-            print_usage(opts);
+            // FIXME: complete with ftp client
+            eprintln!("Unsupported protocol!");
             std::process::exit(255);
         }
-    }
-}
-// Match ticks
-if let Some(val) = matches.opt_str("T") {
-    match val.parse::<usize>() {
-        Ok(val) => ticks = Duration::from_micros(val as u64),
+    };
+    // Get working directory
+    let wrkdir: PathBuf = match env::current_dir() {
+        Ok(dir) => dir,
+        Err(_) => PathBuf::from("/"),
+    };
+    // Create activity manager
+    let mut manager: ActivityManager = match ActivityManager::new(file_transfer, &wrkdir) {
+        Ok(m) => m,
         Err(_) => {
-            eprintln!("Ticks is not a number '{}'", val);
-            print_usage(opts);
+            eprintln!("Invalid directory '{}'", wrkdir.display());
             std::process::exit(255);
         }
+    };
+    // Initialize client if necessary
+    let mut start_activity: NextActivity = NextActivity::Authentication;
+    if let Some(address) = address {
+        // Ask password
+        password = match rpassword::read_password_from_tty(Some("Password: ")) {
+            Ok(p) => {
+                if p.len() > 0 {
+                    Some(p)
+                } else {
+                    None
+                }
+            }
+            Err(_) => {
+                eprintln!("Could not read password from prompt");
+                std::process::exit(255);
+            }
+        };
+        // In this case the first activity will be FileTransfer
+        start_activity = NextActivity::FileTransfer;
+        manager.set_filetransfer_params(address, port, protocol, username, password);
     }
-}
-// Check free args
-let extra_args: Vec<String> = matches.free.clone();
-if let Some(remote) = extra_args.get(0) {
-    // Parse address
-    match utils::parse_remote_opt(remote) {
-        Ok((addr, portn, proto, user)) => {
-            // Set params
-            address = Some(addr);
-            port = portn;
-            protocol = proto;
-            username = user;
-        },
-        Err(err) => {
-            eprintln!("Bad address option: {}", err);
-            print_usage(opts);
-            std::process::exit(255);
-        }
-    }
-}
-// Prepare file transfer
-let file_transfer: Box<dyn FileTransfer> = match protocol {
-    ScpProtocol::Sftp => Box::new(SftpFileTransfer::new()),
-    _ => {
-        // FIXME: complete with ftp client
-        eprintln!("Unsupported protocol!");
-        std::process::exit(255);
-    }
-};
-// Get working directory
-let wrkdir: PathBuf = match env::current_dir() {
-    Ok(dir) => dir,
-    Err(_) => PathBuf::from("/")
-};
-// Create activity manager
-let mut manager: ActivityManager = match ActivityManager::new(file_transfer, &wrkdir) {
-    Ok(m) => m,
-    Err(_) => {
-        eprintln!("Invalid directory '{}'", wrkdir.display());
-        std::process::exit(255);
-    }
-};
-// Initialize client if necessary
-let mut start_activity: NextActivity = NextActivity::Authentication;
-if let Some(address) = address {
-    // In this case the first activity will be FileTransfer
-    start_activity = NextActivity::FileTransfer;
-    manager.set_filetransfer_params(address, port, protocol, username, password);
-}
-// Run
-let rc: i32 = manager.run(start_activity);
-// Then return
-std::process::exit(rc);
+    // Run
+    let rc: i32 = manager.run(start_activity);
+    // Then return
+    std::process::exit(rc);
 }

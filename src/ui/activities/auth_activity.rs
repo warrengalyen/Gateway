@@ -153,7 +153,10 @@ impl Activity for AuthActivity {
                                 }
                                 // Everything OK, set enter
                                 self.form_submit = true;
-                                popup = Some(format!("Connecting to {}:{}...", self.address, self.port));
+                                popup = Some(format!(
+                                    "Connecting to {}:{}...",
+                                    self.address, self.port
+                                ));
                             }
                             KeyCode::Backspace => {
                                 // Pop last char

@@ -33,9 +33,9 @@ use crate::filetransfer::FileTransfer;
 use crate::host::Localhost;
 
 // Includes
-use crossterm::execute;
 use crossterm::event::EnableMouseCapture;
-use crossterm::terminal::{EnterAlternateScreen};
+use crossterm::execute;
+use crossterm::terminal::EnterAlternateScreen;
 use std::io::{stdout, Stdout, Write};
 use tui::backend::CrosstermBackend;
 use tui::Terminal;
@@ -62,7 +62,7 @@ impl Context {
             scp_client: scp_client,
             local: local,
             input_hnd: InputHandler::new(),
-            terminal: Terminal::new(CrosstermBackend::new(stdout)).unwrap()
+            terminal: Terminal::new(CrosstermBackend::new(stdout)).unwrap(),
         }
     }
 }
