@@ -96,6 +96,7 @@ dependencies = [
  "ssh2",
  "tempfile",
  "tui",
+ "unicode-width",
  "users",
  "whoami",
 ]
