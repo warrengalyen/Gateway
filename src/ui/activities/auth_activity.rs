@@ -75,7 +75,7 @@ pub struct AuthActivity {
     pub username: String,
     pub password: String,
     pub submit: bool, // becomes true after user has submitted fields
-    pub quit: bool,  // Becomes true if user has pressed esc
+    pub quit: bool,   // Becomes true if user has pressed esc
     selected_field: InputField,
     popup_message: Option<String>,
     password_placeholder: String,
@@ -175,6 +175,14 @@ impl AuthActivity {
                 _ => Style::default(),
             })
             .block(Block::default().borders(Borders::ALL).title("Password"))
+    }
+
+    /// ### draw_header
+    ///
+    /// Draw header
+    fn draw_header(&self) -> Paragraph {
+        Paragraph::new("  _____       _   \n / ____|     | |\n| |  __  __ _| |_ _____      ____ _ _   _ \n| | |_ |/ _` | __/ _ \\ \\ /\\ / / _` | | | |\n| |__| | (_| | ||  __/\\ V  V / (_| | |_| |\n \\_____|\\__,_|\\__\\___| \\_/\\_/ \\__,_|\\__, |\n                                     __/ |\n                                    |___/ ")
+            .style(Style::default().fg(Color::LightYellow).add_modifier(Modifier::BOLD))
     }
 
     /// ### draw_footer
@@ -349,6 +357,7 @@ impl Activity for AuthActivity {
                 .margin(5)
                 .constraints(
                     [
+                        Constraint::Length(5),
                         Constraint::Length(3),
                         Constraint::Length(3),
                         Constraint::Length(3),
@@ -359,34 +368,36 @@ impl Activity for AuthActivity {
                     .as_ref(),
                 )
                 .split(f.size());
-           // Draw input fields
-           f.render_widget(self.draw_remote_address(), chunks[0]);
-           f.render_widget(self.draw_remote_port(), chunks[1]);
-           f.render_widget(self.draw_protocol_select(), chunks[2]);
-           f.render_widget(self.draw_protocol_username(), chunks[3]);
-           f.render_widget(self.draw_protocol_password(), chunks[4]);
-           // Draw footer
-           f.render_widget(self.draw_footer(), chunks[5]);
-           // TODO: popup
-           // Set cursor
-           match self.selected_field {
-               InputField::Address => f.set_cursor(
-                   chunks[0].x + self.address.width() as u16 + 1,
-                   chunks[0].y + 1,
-               ),
-               InputField::Port => {
-                   f.set_cursor(chunks[1].x + self.port.width() as u16 + 1, chunks[1].y + 1)
-               }
-               InputField::Username => f.set_cursor(
-                   chunks[3].x + self.username.width() as u16 + 1,
-                   chunks[3].y + 1,
-               ),
-               InputField::Password => f.set_cursor(
-                   chunks[4].x + self.password_placeholder.width() as u16 + 1,
-                   chunks[4].y + 1,
-               ),
-               _ => {}
-           }
+            // Draw header
+            f.render_widget(self.draw_header(), chunks[0]);
+            // Draw input fields
+            f.render_widget(self.draw_remote_address(), chunks[1]);
+            f.render_widget(self.draw_remote_port(), chunks[2]);
+            f.render_widget(self.draw_protocol_select(), chunks[3]);
+            f.render_widget(self.draw_protocol_username(), chunks[4]);
+            f.render_widget(self.draw_protocol_password(), chunks[5]);
+            // Draw footer
+            f.render_widget(self.draw_footer(), chunks[6]);
+            // TODO: popup
+            // Set cursor
+            match self.selected_field {
+                InputField::Address => f.set_cursor(
+                    chunks[1].x + self.address.width() as u16 + 1,
+                    chunks[1].y + 1,
+                ),
+                InputField::Port => {
+                    f.set_cursor(chunks[2].x + self.port.width() as u16 + 1, chunks[2].y + 1)
+                }
+                InputField::Username => f.set_cursor(
+                    chunks[4].x + self.username.width() as u16 + 1,
+                    chunks[4].y + 1,
+                ),
+                InputField::Password => f.set_cursor(
+                    chunks[5].x + self.password_placeholder.width() as u16 + 1,
+                    chunks[5].y + 1,
+                ),
+                _ => {}
+            }
         });
     }
 
