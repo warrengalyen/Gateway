@@ -111,7 +111,7 @@ impl Localhost {
             return Err(HostError::new(HostErrorType::NoSuchFileOrDirectory, None));
         }
         // Retrieve files for provided path
-        host.files = match host.scan_dir() {
+        host.files = match host.scan_dir(host.wrkdir.as_path()) {
             Ok(files) => files,
             Err(err) => return Err(err),
         };
@@ -144,7 +144,7 @@ impl Localhost {
                                                      // Update working directory
         self.wrkdir = new_dir;
         // Scan new directory
-        self.files = match self.scan_dir() {
+        self.files = match self.scan_dir(self.wrkdir.as_path()) {
             Ok(files) => files,
             Err(err) => {
                 // Restore directory
@@ -168,7 +168,7 @@ impl Localhost {
         match std::fs::create_dir(dir_path) {
             Ok(_) => {
                 // Update dir
-                self.files = match self.scan_dir() {
+                self.files = match self.scan_dir(self.wrkdir.as_path()) {
                     Ok(f) => f,
                     Err(err) => return Err(err)
                 };
@@ -194,7 +194,7 @@ impl Localhost {
                 match std::fs::remove_dir_all(f_path) {
                     Ok(_) => {
                         // Update dir
-                        self.files = match self.scan_dir() {
+                        self.files = match self.scan_dir(self.wrkdir.as_path()) {
                             Ok(f) => f,
                             Err(err) => return Err(err)
                         };
@@ -213,7 +213,7 @@ impl Localhost {
                 match std::fs::remove_file(f_path) {
                     Ok(_) => {
                         // Update dir
-                        self.files = match self.scan_dir() {
+                        self.files = match self.scan_dir(self.wrkdir.as_path()) {
                             Ok(f) => f,
                             Err(err) => return Err(err)
                         };
@@ -236,7 +236,7 @@ impl Localhost {
         match std::fs::rename(abs_path.as_path(), dst_path) {
             Ok(_) => {
                 // Scan dir
-                self.files = match self.scan_dir() {
+                self.files = match self.scan_dir(self.wrkdir.as_path()) {
                     Ok(f) => f,
                     Err(err) => return Err(err)
                 };
@@ -283,8 +283,8 @@ impl Localhost {
     ///
     /// Get content of the current directory as a list of fs entry (Windows)
     #[cfg(any(unix, macos, linux))]
-    fn scan_dir(&self) -> Result<Vec<FsEntry>, HostError> {
-        let entries = match std::fs::read_dir(self.wrkdir.as_path()) {
+    pub fn scan_dir(&self, dir: &Path) -> Result<Vec<FsEntry>, HostError> {
+        let entries = match std::fs::read_dir(dir) {
             Ok(e) => e,
             Err(err) => return Err(HostError::new(HostErrorType::DirNotAccessible, Some(err))),
         };
@@ -361,8 +361,8 @@ impl Localhost {
     /// Get content of the current directory as a list of fs entry (Windows)
     #[cfg(target_os = "windows")]
     #[cfg(not(tarpaulin_include))]
-    fn scan_dir(&self) -> Result<Vec<FsEntry>, HostError> {
-        let entries = match std::fs::read_dir(self.wrkdir.as_path()) {
+    pub fn scan_dir(&self, dir: &Path) -> Result<Vec<FsEntry>, HostError> {
+        let entries = match std::fs::read_dir(dir) {
             Ok(e) => e,
             Err(err) => return Err(HostError::new(HostErrorType::DirNotAccessible, Some(err))),
         };
