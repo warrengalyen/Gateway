@@ -70,15 +70,7 @@ pub trait FileTransfer {
     /// ### connect
     ///
     /// Connect to the remote server
-
-    fn connect(
-        &mut self,
-        address: String,
-        port: usize,
-        username: Option<String>,
-        password: Option<String>,
-    ) -> Result<(), FileTransferError>;
-
+    fn connect(&mut self, address: String, port: u16, username: Option<String>, password: Option<String>) -> Result<(), FileTransferError>;
     /// ### disconnect
     ///
     /// Disconnect from the remote server
