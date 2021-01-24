@@ -42,7 +42,7 @@ mod utils;
 
 // namespaces
 use activity_manager::{ActivityManager, NextActivity};
-use ui::activities::auth_activity::ScpProtocol;
+use filetransfer::FileTransferProtocol;
 
 /// ### print_usage
 ///
@@ -61,7 +61,7 @@ fn main() {
     let mut port: u16 = 22; // Default port
     let mut username: Option<String> = None; // Default username
     let password: Option<String>; // Default password
-    let mut protocol: ScpProtocol = ScpProtocol::Sftp; // Default protocol
+    let mut protocol: FileTransferProtocol = FileTransferProtocol::Sftp; // Default protocol
     let mut ticks: Duration = Duration::from_micros(50);
     //Process options
     let mut opts = Options::new();
