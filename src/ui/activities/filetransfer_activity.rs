@@ -441,8 +441,7 @@ impl FileTransferActivity {
                             // Make directory
                             // If ctrl is enabled...
                             if key.modifiers.intersects(KeyModifiers::CONTROL) {
-                                // TODO:
-                                //self.input_mode = InputMode::Popup(PopupType::Input(String::from("Insert directory name")))
+                                self.input_mode = InputMode::Popup(PopupType::Input(String::from("Insert directory name"), FileTransferActivity::callback_mkdir));
                             }
                         }
                         'r' | 'R' => {
@@ -724,6 +723,48 @@ impl FileTransferActivity {
         }
     }
 
+     /// ### callback_mkdir
+    /// 
+    /// Callback for MKDIR command (supports both locale and remote)
+    fn callback_mkdir(&mut self, context: &mut Context, input: String) {
+        match self.tab {
+            FileExplorerTab::Local => {
+                match context.local.mkdir(input.clone()) {
+                    Ok(_) => {
+                        // Reload files
+                        self.log(LogLevel::Info, format!("Created directory \"{}\"", input));
+                        self.local.files = context.local.list_dir();
+                    },
+                    Err(err) => {
+                        // Report err
+                        self.log(LogLevel::Error, format!("Could not create directory \"{}\": {}", input, err));
+                        self.input_mode = InputMode::Popup(PopupType::Alert(
+                            Color::Red,
+                            format!("Could not create directory \"{}\": {}", input, err),
+                        ));
+                    }
+                }
+            }
+            FileExplorerTab::Remote => {
+                match self.client.mkdir(input.clone()) {
+                    Ok(_) => {
+                        // Reload files
+                        self.log(LogLevel::Info, format!("Created directory \"{}\"", input));
+                        self.reload_remote_dir();
+                    },
+                    Err(err) => {
+                        // Report err
+                        self.log(LogLevel::Error, format!("Could not create directory \"{}\": {}", input, err));
+                        self.input_mode = InputMode::Popup(PopupType::Alert(
+                            Color::Red,
+                            format!("Could not create directory \"{}\": {}", input, err),
+                        ));
+                    }
+                }
+            }
+        }
+    }
+
     /// ### callback_delete_fsentry
     ///
     /// Delete current selected fsentry in the currently selected TAB
@@ -750,7 +791,7 @@ impl FileTransferActivity {
                         }
                         Err(err) => {
                             self.log(
-                                LogLevel::Info,
+                                LogLevel::Error,
                                 format!(
                                     "Could not delete file \"{}\": {}",
                                     full_path.display(),
@@ -784,7 +825,7 @@ impl FileTransferActivity {
                         }
                         Err(err) => {
                             self.log(
-                                LogLevel::Info,
+                                LogLevel::Error,
                                 format!(
                                     "Could not delete file \"{}\": {}",
                                     full_path.display(),
@@ -857,7 +898,15 @@ impl FileTransferActivity {
                     .fg(Color::White)
                     .add_modifier(Modifier::BOLD),
             ),
-            Span::raw("to change directory\t"),
+            Span::raw("change directory\t"),
+            Span::styled(
+                "<SPACE>",
+                Style::default()
+                    .bg(Color::Cyan)
+                    .fg(Color::White)
+                    .add_modifier(Modifier::BOLD),
+            ),
+            Span::raw("upload/download file\t"),
             Span::styled(
                 "<CTRL+G>",
                 Style::default()
@@ -867,13 +916,21 @@ impl FileTransferActivity {
             ),
             Span::raw("goto path\t"),
             Span::styled(
+                "<CTRL+M>",
+                Style::default()
+                    .bg(Color::Cyan)
+                    .fg(Color::White)
+                    .add_modifier(Modifier::BOLD),
+            ),
+            Span::raw("make dir\t"),
+            Span::styled(
                 "<CTRL+R>",
                 Style::default()
                     .bg(Color::Cyan)
                     .fg(Color::White)
                     .add_modifier(Modifier::BOLD),
             ),
-            Span::raw("to rename file\t"),
+            Span::raw("rename file\t"),
             Span::styled(
                 "<CANC>",
                 Style::default()
@@ -881,7 +938,7 @@ impl FileTransferActivity {
                     .fg(Color::White)
                     .add_modifier(Modifier::BOLD),
             ),
-            Span::raw("to delete file\t"),
+            Span::raw("delete file\t"),
         ];
         Paragraph::new(Text::from(Spans::from(footer)))
     }
