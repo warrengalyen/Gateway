@@ -442,7 +442,9 @@ impl Localhost {
 mod tests {
 
     use super::*;
+    #[cfg(any(unix, macos, linux))]
     use std::fs::File;
+    #[cfg(any(unix, macos, linux))]
     use std::io::Write;
 
     #[cfg(any(unix, macos, linux))]
@@ -714,6 +716,7 @@ mod tests {
         tmpfile
     }
 
+    #[cfg(any(unix, macos, linux))]
     fn get_filename(entry: &FsEntry) -> String {
         match entry {
             FsEntry::Directory(d) => d.name.clone(),
