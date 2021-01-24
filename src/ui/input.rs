@@ -51,16 +51,16 @@ impl InputHandler {
             match self.read_event() {
                 Ok(ev_opt) => match ev_opt {
                     Some(ev) => inbox.push(ev),
-                    None => break
+                    None => break,
                 },
-                Err(_) => return Err(())
+                Err(_) => return Err(()),
             }
         }
         Ok(inbox)
     }
 
     /// ### read_event
-    /// 
+    ///
     /// Read event from input listener
     pub(crate) fn read_event(&self) -> Result<Option<Event>, ()> {
         if let Ok(available) = poll(Duration::from_millis(10)) {
@@ -73,7 +73,7 @@ impl InputHandler {
                         Err(())
                     }
                 }
-                false => Ok(None)
+                false => Ok(None),
             }
         } else {
             Err(())

@@ -63,13 +63,14 @@ pub enum FileTransferError {
 }
 
 impl FileTransferError {
-
     /// ### msg
-    /// 
+    ///
     /// Get error message
     pub fn msg(&self) -> String {
         match self {
-            FileTransferError::AuthenticationFailed => String::from("Authentication failed: bad credentials"),
+            FileTransferError::AuthenticationFailed => {
+                String::from("Authentication failed: bad credentials")
+            }
             FileTransferError::BadAddress => String::from("Bad address syntax"),
             FileTransferError::ConnectionError => String::from("Connection error"),
             FileTransferError::DirStatFailed => String::from("Could not stat directory"),
@@ -82,7 +83,6 @@ impl FileTransferError {
             FileTransferError::UnknownError => String::from("Unknown error"),
         }
     }
-
 }
 
 /// ## FileTransfer
@@ -93,7 +93,13 @@ pub trait FileTransfer {
     /// ### connect
     ///
     /// Connect to the remote server
-    fn connect(&mut self, address: String, port: u16, username: Option<String>, password: Option<String>) -> Result<(), FileTransferError>;
+    fn connect(
+        &mut self,
+        address: String,
+        port: u16,
+        username: Option<String>,
+        password: Option<String>,
+    ) -> Result<(), FileTransferError>;
     /// ### disconnect
     ///
     /// Disconnect from the remote server

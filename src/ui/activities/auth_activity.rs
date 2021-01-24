@@ -372,7 +372,7 @@ impl AuthActivity {
     }
 
     /// ### draw_popup
-    /// 
+    ///
     /// Draw popup block
     fn draw_popup(&self, r: Rect) -> (Paragraph, Rect) {
         let popup_layout = Layout::default()
