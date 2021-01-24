@@ -150,8 +150,8 @@ impl AuthActivity {
                                     self.popup_message = Some(String::from(
                                         "Specified port must be in range 0-65535",
                                     ));
+                                    return;
                                 }
-                                return;
                             }
                             Err(_) => {
                                 self.popup_message =

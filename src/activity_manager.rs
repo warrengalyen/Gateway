@@ -29,8 +29,9 @@ use std::path::PathBuf;
 use crate::filetransfer::FileTransferProtocol;
 use crate::host::Localhost;
 use crate::ui::activities::{
-    auth_activity::AuthActivity, filetransfer_activity::FileTransferActivity,
-    filetransfer_activity::FileTransferParams, Activity,
+    auth_activity::AuthActivity,
+    filetransfer_activity::FileTransferActivity, filetransfer_activity::FileTransferParams,
+    Activity,
 };
 use crate::ui::context::Context;
 
@@ -59,7 +60,10 @@ impl ActivityManager {
     /// ### new
     ///
     /// Initializes a new Activity Manager
-    pub fn new(local_dir: &PathBuf, interval: Duration) -> Result<ActivityManager, ()> {
+    pub fn new(
+        local_dir: &PathBuf,
+        interval: Duration,
+    ) -> Result<ActivityManager, ()> {
         // Prepare Context
         let host: Localhost = match Localhost::new(local_dir.clone()) {
             Ok(h) => h,
