@@ -19,6 +19,7 @@ tui = { version = "0.12.0", features = ["crossterm"], default-features = false }
 whoami = "0.9.0"
 rpassword = "5.0.0"
 unicode-width = "0.1.7"
+chrono = "0.4.19"
 
 [target.'cfg(any(unix, macos, linux))'.dependencies]
 users = "0.11.0"
