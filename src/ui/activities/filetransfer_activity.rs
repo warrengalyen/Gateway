@@ -5,7 +5,7 @@
 /*
 *
 *   Copyright (C) 2021 Warren Galyen
-*
+
 * 	This file is part of "Gateway"
 *
 *   Gateway is free software: you can redistribute it and/or modify
@@ -51,7 +51,7 @@ use tui::{
     style::{Color, Modifier, Style},
     terminal::Frame,
     text::{Span, Spans, Text},
-    widgets::{Block, Borders, Clear, Paragraph, Tabs},
+    widgets::{Block, Borders, List, ListItem, Paragraph, Tabs},
 };
 use unicode_width::UnicodeWidthStr;
 
@@ -59,8 +59,8 @@ use unicode_width::UnicodeWidthStr;
 static mut UPLOAD_PROGRESS: f64 = 0.0; // VERY VERY BAD CODING
 
 // Types
-type DialogCallback = fn(&mut FileTransferActivity, &mut Context);
-type OnInputSubmitCallback = fn(&mut FileTransferActivity, &mut Context, String);
+type DialogCallback = fn(&mut FileTransferActivity);
+type OnInputSubmitCallback = fn(&mut FileTransferActivity, String);
 
 /// ### FileTransferParams
 ///
@@ -136,7 +136,7 @@ impl FileExplorer {
     }
 
     /// ### pushd
-    /// 
+    ///
     /// push directory to stack
     pub fn pushd(&mut self, dir: &Path) {
         // Check if stack overflows the size
@@ -148,12 +148,11 @@ impl FileExplorer {
     }
 
     /// ### popd
-    /// 
+    ///
     /// Pop directory from the stack and return the directory
     pub fn popd(&mut self) -> Option<PathBuf> {
         self.dirstack.pop_front()
     }
-
 }
 
 /// ## FileExplorerTab
@@ -201,6 +200,7 @@ impl LogRecord {
 pub struct FileTransferActivity {
     pub disconnected: bool,           // Has disconnected from remote?
     pub quit: bool,                   // Has quit term scp?
+    context: Option<Context>,         // Context holder
     params: FileTransferParams,       // FT connection params
     client: Box<dyn FileTransfer>,    // File transfer client
     local: FileExplorer,              // Local File explorer state
@@ -224,6 +224,7 @@ impl FileTransferActivity {
         FileTransferActivity {
             disconnected: false,
             quit: false,
+            context: None,
             params: params,
             client: match protocol {
                 FileTransferProtocol::Sftp => Box::new(SftpFileTransfer::new()),
@@ -270,7 +271,7 @@ impl FileTransferActivity {
     /// ### disconnect
     ///
     /// disconnect from remote
-    fn disconnect(&mut self, context: &mut Context) {
+    fn disconnect(&mut self) {
         // Show popup disconnecting
         self.input_mode = InputMode::Popup(PopupType::Alert(
             Color::Red,
@@ -308,7 +309,7 @@ impl FileTransferActivity {
     /// Send fs entry to remote.
     /// If dst_name is Some, entry will be saved with a different name.
     /// If entry is a directory, this applies to directory only
-    fn filetransfer_send(&mut self, ctx: &mut Context, entry: &FsEntry, dst_name: Option<String>) {
+    fn filetransfer_send(&mut self, entry: &FsEntry, dst_name: Option<String>) {
         // Write popup
         let file_name: String = match entry {
             FsEntry::Directory(dir) => dir.name.clone(),
@@ -335,7 +336,13 @@ impl FileTransferActivity {
             FsEntry::File(file) => {
                 // Upload file
                 // Try to open local file
-                match ctx.local.open_file_read(file.abs_path.as_path()) {
+                match self
+                    .context
+                    .as_ref()
+                    .unwrap()
+                    .local
+                    .open_file_read(file.abs_path.as_path())
+                {
                     Ok(mut f) => {
                         match self
                             .client
@@ -384,12 +391,18 @@ impl FileTransferActivity {
                             format!("Created directory \"{}\"", dir.abs_path.display()).as_ref(),
                         );
                         // Get files in dir
-                        match ctx.local.scan_dir(dir.abs_path.as_path()) {
+                        match self
+                            .context
+                            .as_ref()
+                            .unwrap()
+                            .local
+                            .scan_dir(dir.abs_path.as_path())
+                        {
                             Ok(entries) => {
                                 // Iterate over files
                                 for entry in entries.iter() {
                                     // Send entry; name is always None after first call
-                                    self.filetransfer_send(ctx, &entry, None);
+                                    self.filetransfer_send(&entry, None);
                                 }
                             }
                             Err(err) => self.log(
@@ -422,13 +435,7 @@ impl FileTransferActivity {
     /// Recv fs entry from remote.
     /// If dst_name is Some, entry will be saved with a different name.
     /// If entry is a directory, this applies to directory only
-    fn filetransfer_recv(
-        &mut self,
-        ctx: &mut Context,
-        entry: &FsEntry,
-        local_path: &Path,
-        dst_name: Option<String>,
-    ) {
+    fn filetransfer_recv(&mut self, entry: &FsEntry, local_path: &Path, dst_name: Option<String>) {
         // Write popup
         let file_name: String = match entry {
             FsEntry::Directory(dir) => dir.name.clone(),
@@ -457,7 +464,13 @@ impl FileTransferActivity {
                 };
                 local_file_path.push(local_file_name.as_str());
                 // Try to open local file
-                match ctx.local.open_file_write(local_file_path.as_path()) {
+                match self
+                    .context
+                    .as_ref()
+                    .unwrap()
+                    .local
+                    .open_file_write(local_file_path.as_path())
+                {
                     Ok(mut local_file) => {
                         // Download file from remote
                         match self.client.recv_file(
@@ -507,7 +520,13 @@ impl FileTransferActivity {
                     None => local_dir_path.push(dir.name.as_str()),
                 }
                 // Create directory on local
-                match ctx.local.mkdir_ex(local_dir_path.as_path(), true) {
+                match self
+                    .context
+                    .as_mut()
+                    .unwrap()
+                    .local
+                    .mkdir_ex(local_dir_path.as_path(), true)
+                {
                     Ok(_) => {
                         self.log(
                             LogLevel::Info,
@@ -520,12 +539,7 @@ impl FileTransferActivity {
                                 for entry in entries.iter() {
                                     // Receive entry; name is always None after first call
                                     // Local path becomes local_dir_path
-                                    self.filetransfer_recv(
-                                        ctx,
-                                        &entry,
-                                        local_dir_path.as_path(),
-                                        None,
-                                    );
+                                    self.filetransfer_recv(&entry, local_dir_path.as_path(), None);
                                 }
                             }
                             Err(err) => self.log(
@@ -595,29 +609,23 @@ impl FileTransferActivity {
     /// ### handle_input_event
     ///
     /// Handle input event based on current input mode
-    fn handle_input_event(&mut self, context: &mut Context, ev: &InputEvent) {
+    fn handle_input_event(&mut self, ev: &InputEvent) {
         match &self.input_mode {
-            InputMode::Explorer => self.handle_input_event_mode_explorer(context, ev),
-            InputMode::Popup(ptype) => {
-                self.handle_input_event_mode_popup(ev, ptype.clone(), context)
-            }
+            InputMode::Explorer => self.handle_input_event_mode_explorer(ev),
+            InputMode::Popup(ptype) => self.handle_input_event_mode_popup(ev, ptype.clone()),
         }
     }
 
     /// ### handle_input_event_mode_explorer
     ///
     /// Input event handler for explorer mode
-    fn handle_input_event_mode_explorer(&mut self, context: &mut Context, ev: &InputEvent) {
+    fn handle_input_event_mode_explorer(&mut self, ev: &InputEvent) {
         // Match input field
         match self.input_field {
             InputField::Explorer => match self.tab {
                 // Match current selected tab
-                FileExplorerTab::Local => {
-                    self.handle_input_event_mode_explorer_tab_local(context, ev)
-                }
-                FileExplorerTab::Remote => {
-                    self.handle_input_event_mode_explorer_tab_remote(context, ev)
-                }
+                FileExplorerTab::Local => self.handle_input_event_mode_explorer_tab_local(ev),
+                FileExplorerTab::Remote => self.handle_input_event_mode_explorer_tab_remote(ev),
             },
             InputField::Logs => self.handle_input_event_mode_explorer_log(ev),
         }
@@ -626,11 +634,7 @@ impl FileTransferActivity {
     /// ### handle_input_event_mode_explorer_tab_local
     ///
     /// Input event handler for explorer mode when localhost tab is selected
-    fn handle_input_event_mode_explorer_tab_local(
-        &mut self,
-        context: &mut Context,
-        ev: &InputEvent,
-    ) {
+    fn handle_input_event_mode_explorer_tab_local(&mut self, ev: &InputEvent) {
         // Match events
         match ev {
             InputEvent::Key(key) => {
@@ -659,9 +663,15 @@ impl FileTransferActivity {
                         if let Some(entry) = self.local.files.get(self.local.index) {
                             if let FsEntry::Directory(dir) = entry {
                                 // Get current directory
-                                let prev_dir: PathBuf = context.local.pwd();
+                                let prev_dir: PathBuf = self.context.as_ref().unwrap().local.pwd();
                                 // Change directory
-                                match context.local.change_wrkdir(dir.abs_path.clone()) {
+                                match self
+                                    .context
+                                    .as_mut()
+                                    .unwrap()
+                                    .local
+                                    .change_wrkdir(dir.abs_path.clone())
+                                {
                                     Ok(_) => self.local.pushd(prev_dir.as_path()), // Push prev_dir to stack
                                     Err(err) => {
                                         // Report err
@@ -672,20 +682,21 @@ impl FileTransferActivity {
                                     }
                                 }
                                 // Update files
-                                self.local.files = context.local.list_dir();
+                                self.local.files = self.context.as_ref().unwrap().local.list_dir();
                             }
                         }
                     }
                     KeyCode::Backspace => {
-                          // Go to previous directory
-                          loop {
+                        // Go to previous directory
+                        loop {
                             // Till a valid directory is found
                             match self.local.popd() {
                                 Some(d) => {
-                                    match context.local.change_wrkdir(d) {
+                                    match self.context.as_mut().unwrap().local.change_wrkdir(d) {
                                         Ok(_) => {
                                             // Update files
-                                            self.local.files = context.local.list_dir();
+                                            self.local.files =
+                                                self.context.as_ref().unwrap().local.list_dir();
                                             // Break, directory has changed
                                             break;
                                         }
@@ -770,7 +781,7 @@ impl FileTransferActivity {
                                                                                 // Get file at index
                             if let Some(entry) = files.get(self.local.index) {
                                 // Call upload
-                                self.filetransfer_send(context, entry, None);
+                                self.filetransfer_send(entry, None);
                             }
                         }
                         _ => { /* Nothing to do */ }
@@ -785,12 +796,7 @@ impl FileTransferActivity {
     /// ### handle_input_event_mode_explorer_tab_local
     ///
     /// Input event handler for explorer mode when remote tab is selected
-    fn handle_input_event_mode_explorer_tab_remote(
-        &mut self,
-        context: &mut Context,
-        ev: &InputEvent,
-    ) {
-        // TODO: implement
+    fn handle_input_event_mode_explorer_tab_remote(&mut self, ev: &InputEvent) {
         // Match events
         match ev {
             InputEvent::Key(key) => {
@@ -963,9 +969,8 @@ impl FileTransferActivity {
                             if let Some(entry) = files.get(self.remote.index) {
                                 // Call upload
                                 self.filetransfer_recv(
-                                    context,
                                     entry,
-                                    context.local.pwd().as_path(),
+                                    self.context.as_ref().unwrap().local.pwd().as_path(),
                                     None,
                                 );
                             }
@@ -1033,20 +1038,15 @@ impl FileTransferActivity {
     /// ### handle_input_event_mode_explorer
     ///
     /// Input event handler for popup mode. Handler is then based on Popup type
-    fn handle_input_event_mode_popup(
-        &mut self,
-        ev: &InputEvent,
-        popup: PopupType,
-        ctx: &mut Context,
-    ) {
+    fn handle_input_event_mode_popup(&mut self, ev: &InputEvent, popup: PopupType) {
         match popup {
             PopupType::Alert(_, _) => self.handle_input_event_mode_popup_alert(ev),
             PopupType::Fatal(_) => self.handle_input_event_mode_popup_fatal(ev),
-            PopupType::Input(_, cb) => self.handle_input_event_mode_popup_input(ev, ctx, cb),
+            PopupType::Input(_, cb) => self.handle_input_event_mode_popup_input(ev, cb),
             PopupType::Progress(_) => self.handle_input_event_mode_popup_progress(ev),
             PopupType::Wait(_) => self.handle_input_event_mode_popup_wait(ev),
             PopupType::YesNo(_, yes_cb, no_cb) => {
-                self.handle_input_event_mode_popup_yesno(ev, ctx, yes_cb, no_cb)
+                self.handle_input_event_mode_popup_yesno(ev, yes_cb, no_cb)
             }
         }
     }
@@ -1092,12 +1092,7 @@ impl FileTransferActivity {
     /// ### handle_input_event_mode_popup_input
     ///
     /// Input event handler for input popup
-    fn handle_input_event_mode_popup_input(
-        &mut self,
-        ev: &InputEvent,
-        ctx: &mut Context,
-        cb: OnInputSubmitCallback,
-    ) {
+    fn handle_input_event_mode_popup_input(&mut self, ev: &InputEvent, cb: OnInputSubmitCallback) {
         // If enter, close popup, otherwise push chars to input
         match ev {
             InputEvent::Key(key) => {
@@ -1117,7 +1112,7 @@ impl FileTransferActivity {
                         // Set mode back to explorer BEFORE CALLBACKS!!! Callback can then overwrite this, clever uh?
                         self.input_mode = InputMode::Explorer;
                         // Call cb
-                        cb(self, ctx, input_text);
+                        cb(self, input_text);
                     }
                     KeyCode::Char(ch) => self.input_txt.push(ch),
                     KeyCode::Backspace => {
@@ -1156,7 +1151,6 @@ impl FileTransferActivity {
     fn handle_input_event_mode_popup_yesno(
         &mut self,
         ev: &InputEvent,
-        ctx: &mut Context,
         yes_cb: DialogCallback,
         no_cb: DialogCallback,
     ) {
@@ -1169,8 +1163,8 @@ impl FileTransferActivity {
                         self.input_mode = InputMode::Explorer;
                         // Check if user selected yes or not
                         match self.choice_opt {
-                            DialogYesNoOption::No => no_cb(self, ctx),
-                            DialogYesNoOption::Yes => yes_cb(self, ctx),
+                            DialogYesNoOption::No => no_cb(self),
+                            DialogYesNoOption::Yes => yes_cb(self),
                         }
                     }
                     KeyCode::Right => self.choice_opt = DialogYesNoOption::No, // Set to NO
@@ -1187,20 +1181,26 @@ impl FileTransferActivity {
     /// ### callback_nothing_to_do
     ///
     /// Self titled
-    fn callback_nothing_to_do(&mut self, _context: &mut Context) {}
+    fn callback_nothing_to_do(&mut self) {}
 
     /// ### callback_force_input_mode_to_explorer
     ///
     /// force input mode to explorer
-    fn callback_force_input_mode_to_explorer(&mut self, _context: &mut Context) {
+    fn callback_force_input_mode_to_explorer(&mut self) {
         self.input_mode = InputMode::Explorer;
     }
 
     /// ### callback_change_directory
     ///
     /// Callback for GOTO command
-    fn callback_change_directory(&mut self, context: &mut Context, input: String) {
-        match context.local.change_wrkdir(PathBuf::from(input.as_str())) {
+    fn callback_change_directory(&mut self, input: String) {
+        match self
+            .context
+            .as_mut()
+            .unwrap()
+            .local
+            .change_wrkdir(PathBuf::from(input.as_str()))
+        {
             Err(err) => {
                 // Report err
                 self.input_mode = InputMode::Popup(PopupType::Alert(
@@ -1208,24 +1208,30 @@ impl FileTransferActivity {
                     format!("Could not change working directory: {}", err),
                 ));
             }
-            Ok(_) => self.local.files = context.local.list_dir(), // Update files
+            Ok(_) => self.local.files = self.context.as_ref().unwrap().local.list_dir(), // Update files
         }
     }
 
     /// ### callback_mkdir
     ///
     /// Callback for MKDIR command (supports both local and remote)
-    fn callback_mkdir(&mut self, context: &mut Context, input: String) {
+    fn callback_mkdir(&mut self, input: String) {
         match self.tab {
             FileExplorerTab::Local => {
-                match context.local.mkdir(PathBuf::from(input.as_str()).as_path()) {
+                match self
+                    .context
+                    .as_mut()
+                    .unwrap()
+                    .local
+                    .mkdir(PathBuf::from(input.as_str()).as_path())
+                {
                     Ok(_) => {
                         // Reload files
                         self.log(
                             LogLevel::Info,
                             format!("Created directory \"{}\"", input).as_ref(),
                         );
-                        self.local.files = context.local.list_dir();
+                        self.local.files = self.context.as_ref().unwrap().local.list_dir();
                     }
                     Err(err) => {
                         // Report err
@@ -1269,13 +1275,13 @@ impl FileTransferActivity {
     /// ### callback_rename
     ///
     /// Callback for RENAME command (supports borth local and remote)
-    fn callback_rename(&mut self, context: &mut Context, input: String) {
+    fn callback_rename(&mut self, input: String) {
         match self.tab {
             FileExplorerTab::Local => {
                 let mut dst_path: PathBuf = PathBuf::from(input);
                 // Check if path is relative
                 if dst_path.as_path().is_relative() {
-                    let mut wrkdir: PathBuf = context.local.pwd();
+                    let mut wrkdir: PathBuf = self.context.as_ref().unwrap().local.pwd();
                     wrkdir.push(dst_path);
                     dst_path = wrkdir;
                 }
@@ -1286,10 +1292,16 @@ impl FileTransferActivity {
                         FsEntry::File(file) => file.abs_path.clone(),
                     };
                     // Rename file or directory and report status as popup
-                    match context.local.rename(entry, dst_path.as_path()) {
+                    match self
+                        .context
+                        .as_mut()
+                        .unwrap()
+                        .local
+                        .rename(entry, dst_path.as_path())
+                    {
                         Ok(_) => {
                             // Reload files
-                            self.local.files = context.local.list_dir();
+                            self.local.files = self.context.as_ref().unwrap().local.list_dir();
                             // Log
                             self.log(
                                 LogLevel::Info,
@@ -1331,7 +1343,7 @@ impl FileTransferActivity {
                     match self.client.rename(entry, dst_path.as_path()) {
                         Ok(_) => {
                             // Reload files
-                            self.local.files = context.local.list_dir();
+                            self.local.files = self.context.as_ref().unwrap().local.list_dir();
                             // Log
                             self.log(
                                 LogLevel::Info,
@@ -1367,7 +1379,7 @@ impl FileTransferActivity {
     /// ### callback_delete_fsentry
     ///
     /// Delete current selected fsentry in the currently selected TAB
-    fn callback_delete_fsentry(&mut self, context: &mut Context) {
+    fn callback_delete_fsentry(&mut self) {
         // Match current selected tab
         match self.tab {
             FileExplorerTab::Local => {
@@ -1378,10 +1390,10 @@ impl FileTransferActivity {
                         FsEntry::File(file) => file.abs_path.clone(),
                     };
                     // Delete file or directory and report status as popup
-                    match context.local.remove(entry) {
+                    match self.context.as_mut().unwrap().local.remove(entry) {
                         Ok(_) => {
                             // Reload files
-                            self.local.files = context.local.list_dir();
+                            self.local.files = self.context.as_ref().unwrap().local.list_dir();
                             // Log
                             self.log(
                                 LogLevel::Info,
@@ -1447,14 +1459,14 @@ impl FileTransferActivity {
     ///
     /// Call file upload, but save with input as name
     /// Handled both local and remote tab
-    fn callback_save_as(&mut self, ctx: &mut Context, input: String) {
+    fn callback_save_as(&mut self, input: String) {
         match self.tab {
             FileExplorerTab::Local => {
                 let files: Vec<FsEntry> = self.local.files.clone();
                 // Get file at index
                 if let Some(entry) = files.get(self.local.index) {
                     // Call send (upload)
-                    self.filetransfer_send(ctx, entry, Some(input));
+                    self.filetransfer_send(entry, Some(input));
                 }
             }
             FileExplorerTab::Remote => {
@@ -1462,7 +1474,11 @@ impl FileTransferActivity {
                 // Get file at index
                 if let Some(entry) = files.get(self.remote.index) {
                     // Call receive (download)
-                    self.filetransfer_recv(ctx, entry, ctx.local.pwd().as_path(), Some(input));
+                    self.filetransfer_recv(
+                        entry,
+                        self.context.as_ref().unwrap().local.pwd().as_path(),
+                        Some(input),
+                    );
                 }
             }
         }
@@ -1484,6 +1500,43 @@ impl FileTransferActivity {
         Paragraph::new("  _____       _   \n / ____|     | |\n| |  __  __ _| |_ _____      ____ _ _   _ \n| | |_ |/ _` | __/ _ \\ \\ /\\ / / _` | | | |\n| |__| | (_| | ||  __/\\ V  V / (_| | |_| |\n \\_____|\\__,_|\\__\\___| \\_/\\_/ \\__,_|\\__, |\n                                     __/ |\n                                    |___/ ")
             .style(Style::default().fg(Color::LightYellow).add_modifier(Modifier::BOLD))
     }
+
+    /*
+    /// ### draw_log_list
+    ///
+    /// Draw log list
+    fn draw_log_list(&self) -> List {
+        let events: Vec<ListItem> = self.log_records
+            .iter()
+            .map(|&(evt, level)| {
+                    let s = match level {
+                        "CRITICAL" => Style::default().fg(Color::Red),
+                        "ERROR" => Style::default().fg(Color::Magenta),
+                        "WARNING" => Style::default().fg(Color::Yellow),
+                        "INFO" => Style::default().fg(Color::Blue),
+                        _ => Style::default(),
+                    };
+                    let header = Spans::from(vec![
+                        Span::styled(format!("{:<9}", level), s),
+                        Span::raw(" "),
+                        Span::styled(
+                            "2020-01-01 10:00:00",
+                            Style::default().add_modifier(Modifier::ITALIC),
+                        ),
+                    ]);
+                    let log = Spans::from(vec![Span::raw(evt)]);
+                    ListItem::new(vec![
+                        Spans::from("-".repeat(chunks[1].width as usize)),
+                        header,
+                        Spans::from(""),
+                        log,
+                    ])
+                })
+                .collect();
+            let events_list = List::new(events)
+                .block(Block::default().borders(Borders::ALL).title("List"))
+                .start_corner(Corner::BottomLeft);
+    }*/
 
     /// ### draw_footer
     ///
@@ -1579,20 +1632,26 @@ impl Activity for FileTransferActivity {
     ///
     /// `on_create` is the function which must be called to initialize the activity.
     /// `on_create` must initialize all the data structures used by the activity
-    fn on_create(&mut self, context: &mut Context) {
+    fn on_create(&mut self, context: Context) {
+        // Set context
+        self.context = Some(context);
+        // Clear terminal
+        let _ = self.context.as_mut().unwrap().terminal.clear();
         // Put raw mode on enabled
         let _ = enable_raw_mode();
-        // Clear terminal
-        let _ = context.terminal.clear();
         // Get files at current wd
-        self.local.files = context.local.list_dir();
+        self.local.files = self.context.as_ref().unwrap().local.list_dir();
     }
 
     /// ### on_draw
     ///
     /// `on_draw` is the function which draws the graphical interface.
     /// This function must be called at each tick to refresh the interface
-    fn on_draw(&mut self, context: &mut Context) {
+    fn on_draw(&mut self) {
+        // Context must be something
+        if self.context.is_none() {
+            return;
+        }
         // Check if connected
         if !self.client.is_connected() {
             // Set init state to connecting popup
@@ -1601,37 +1660,47 @@ impl Activity for FileTransferActivity {
                 self.params.address, self.params.port
             )));
             // Force ui draw
-            let _ = context.terminal.draw(|f| {
+            let mut ctx: Context = self.context.take().unwrap();
+            let _ = ctx.terminal.draw(|f| {
                 self.draw(f);
             });
+            self.context = Some(ctx);
             // Connect to remote
             self.connect();
         }
         // Handle input events FIXME: read one or multiple?
-        if let Ok(event) = context.input_hnd.read_event() {
+        if let Ok(event) = self.context.as_ref().unwrap().input_hnd.read_event() {
             // Iterate over input events
             if let Some(event) = event {
-                self.handle_input_event(context, &event);
+                self.handle_input_event(&event);
             }
         }
         // @! draw interface
-        let _ = context.terminal.draw(|f| {
+        let mut ctx: Context = self.context.take().unwrap();
+        let _ = ctx.terminal.draw(|f| {
             self.draw(f);
         });
+        self.context = Some(ctx);
     }
 
     /// ### on_destroy
     ///
     /// `on_destroy` is the function which cleans up runtime variables and data before terminating the activity.
     /// This function must be called once before terminating the activity.
-    fn on_destroy(&mut self, context: &mut Context) {
+    fn on_destroy(&mut self) -> Option<Context> {
         // Disable raw mode
         let _ = disable_raw_mode();
-        // Clear terminal
-        let _ = context.terminal.clear();
         // Disconnect client
         if self.client.is_connected() {
             let _ = self.client.disconnect();
+        }
+        // Clear terminal and return
+        match self.context.take() {
+            Some(mut ctx) => {
+                let _ = ctx.terminal.clear();
+                Some(ctx)
+            }
+            None => None,
         }
     }
 }
