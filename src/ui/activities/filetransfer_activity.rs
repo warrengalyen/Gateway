@@ -1569,6 +1569,34 @@ impl FileTransferActivity {
             .start_corner(Corner::BottomLeft)
     }
 
+    /// ### draw_popup_area
+    ///
+    /// Draw popup area
+    fn draw_popup_area(&self, area: Rect) -> Rect {
+        let popup_layout = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints(
+                [
+                    Constraint::Percentage((80) / 2),
+                    Constraint::Percentage(20),
+                    Constraint::Percentage((80) / 2),
+                ]
+                .as_ref(),
+            )
+            .split(area);
+        Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints(
+                [
+                    Constraint::Percentage((80) / 2),
+                    Constraint::Percentage(20),
+                    Constraint::Percentage((80) / 2),
+                ]
+                .as_ref(),
+            )
+            .split(popup_layout[1])[1]
+    }
+
     /// ### draw_footer
     ///
     /// Draw authentication page footer
