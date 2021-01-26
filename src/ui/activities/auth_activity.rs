@@ -493,8 +493,8 @@ impl Activity for AuthActivity {
                 _ => {}
             }
         });
-         // Reset ctx
-         self.context = Some(ctx);
+        // Reset ctx
+        self.context = Some(ctx);
     }
 
     /// ### on_destroy
@@ -513,8 +513,8 @@ impl Activity for AuthActivity {
             Some(mut ctx) => {
                 let _ = ctx.terminal.clear();
                 Some(ctx)
-            },
-            None => None
+            }
+            None => None,
         }
     }
 }

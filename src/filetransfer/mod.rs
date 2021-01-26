@@ -23,8 +23,8 @@
 *
 */
 
-use std::path::{Path, PathBuf};
 use std::fs::File;
+use std::path::{Path, PathBuf};
 
 use crate::fs::FsEntry;
 
@@ -137,7 +137,7 @@ pub trait FileTransfer {
     fn remove(&self, file: &FsEntry) -> Result<(), FileTransferError>;
 
     /// ### rename
-    /// 
+    ///
     /// Rename file or a directory
     fn rename(&self, file: &FsEntry, dst: &Path) -> Result<(), FileTransferError>;
 

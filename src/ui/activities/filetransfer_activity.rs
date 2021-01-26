@@ -1493,35 +1493,54 @@ impl FileTransferActivity {
             let mut remote_state: ListState = ListState::default();
             remote_state.select(Some(self.remote.index));
             // Draw tabs
-            f.render_stateful_widget(self.draw_local_explorer(), tabs_chunks[0], &mut localhost_state);
-            f.render_stateful_widget(self.draw_remote_explorer(), tabs_chunks[1], &mut remote_state);
+            f.render_stateful_widget(
+                self.draw_local_explorer(),
+                tabs_chunks[0],
+                &mut localhost_state,
+            );
+            f.render_stateful_widget(
+                self.draw_remote_explorer(),
+                tabs_chunks[1],
+                &mut remote_state,
+            );
             // Set log state
             let mut log_state: ListState = ListState::default();
             log_state.select(Some(self.log_index));
-             // Draw log
-             f.render_stateful_widget(self.draw_log_list(), chunks[2], &mut log_state);
-             // Draw footer
-             f.render_widget(self.draw_footer(), chunks[3]);
-             // Draw popup
-             if let InputMode::Popup(popup) = &self.input_mode {
-                 let popup_area: Rect = self.draw_popup_area(f.size());
-                 f.render_widget(Clear, popup_area); //this clears out the background
-                 match popup {
-                     PopupType::Alert(color, txt) => f.render_widget(self.draw_popup_alert(color.clone(), txt.clone()), popup_area),
-                     PopupType::Fatal(txt) => f.render_widget(self.draw_popup_fatal(txt.clone()), popup_area),
-                     PopupType::Input(txt, _) => {
-                         f.render_widget(self.draw_popup_input(txt.clone()), popup_area);
-                         // Set cursor
-                         f.set_cursor(
-                             popup_area.x + self.input_txt.width() as u16 + 1,
-                             popup_area.y + 1,
-                         )
-                     },
-                     PopupType::Progress(txt) => f.render_widget(self.draw_popup_progress(txt.clone()), popup_area),
-                     PopupType::Wait(txt) => f.render_widget(self.draw_popup_wait(txt.clone()), popup_area),
-                     PopupType::YesNo(txt, _, _) => f.render_widget(self.draw_popup_yesno(txt.clone()), popup_area),
-                 }
-             }
+            // Draw log
+            f.render_stateful_widget(self.draw_log_list(), chunks[2], &mut log_state);
+            // Draw footer
+            f.render_widget(self.draw_footer(), chunks[3]);
+            // Draw popup
+            if let InputMode::Popup(popup) = &self.input_mode {
+                let popup_area: Rect = self.draw_popup_area(f.size());
+                f.render_widget(Clear, popup_area); //this clears out the background
+                match popup {
+                    PopupType::Alert(color, txt) => f.render_widget(
+                        self.draw_popup_alert(color.clone(), txt.clone()),
+                        popup_area,
+                    ),
+                    PopupType::Fatal(txt) => {
+                        f.render_widget(self.draw_popup_fatal(txt.clone()), popup_area)
+                    }
+                    PopupType::Input(txt, _) => {
+                        f.render_widget(self.draw_popup_input(txt.clone()), popup_area);
+                        // Set cursor
+                        f.set_cursor(
+                            popup_area.x + self.input_txt.width() as u16 + 1,
+                            popup_area.y + 1,
+                        )
+                    }
+                    PopupType::Progress(txt) => {
+                        f.render_widget(self.draw_popup_progress(txt.clone()), popup_area)
+                    }
+                    PopupType::Wait(txt) => {
+                        f.render_widget(self.draw_popup_wait(txt.clone()), popup_area)
+                    }
+                    PopupType::YesNo(txt, _, _) => {
+                        f.render_widget(self.draw_popup_yesno(txt.clone()), popup_area)
+                    }
+                }
+            }
         });
         self.context = Some(ctx);
     }
@@ -1598,7 +1617,7 @@ impl FileTransferActivity {
     /// Draw log list
     fn draw_log_list(&self) -> List {
         let events: Vec<ListItem> = self
-        .log_records
+            .log_records
             .iter()
             .map(|record: &LogRecord| {
                 let s = match record.level {
