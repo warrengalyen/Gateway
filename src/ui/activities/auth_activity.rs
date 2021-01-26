@@ -348,7 +348,7 @@ impl AuthActivity {
     /// Draw header
     fn draw_header(&self) -> Paragraph {
         Paragraph::new("  _____       _   \n / ____|     | |\n| |  __  __ _| |_ _____      ____ _ _   _ \n| | |_ |/ _` | __/ _ \\ \\ /\\ / / _` | | | |\n| |__| | (_| | ||  __/\\ V  V / (_| | |_| |\n \\_____|\\__,_|\\__\\___| \\_/\\_/ \\__,_|\\__, |\n                                     __/ |\n                                    |___/ ")
-            .style(Style::default().fg(Color::LightYellow).add_modifier(Modifier::BOLD))
+            .style(Style::default().fg(Color::White).add_modifier(Modifier::BOLD))
     }
 
     /// ### draw_footer
