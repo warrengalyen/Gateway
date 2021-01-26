@@ -1471,7 +1471,7 @@ impl FileTransferActivity {
                 .margin(2)
                 .constraints(
                     [
-                        Constraint::Length(5),  // Header
+                        Constraint::Length(8),  // Header
                         Constraint::Length(20), // Explorer
                         Constraint::Length(20), // Log
                         Constraint::Length(3),  // Footer
