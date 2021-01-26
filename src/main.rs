@@ -51,6 +51,7 @@ use filetransfer::FileTransferProtocol;
 fn print_usage(opts: Options) {
     let brief = format!("Usage: gateway [Options]... [protocol:user@address:port]");
     print!("{}", opts.usage(&brief));
+    println!("\nPlease, report issues to <https://github.com/warrengalyen/Gateway>");
 }
 
 fn main() {
