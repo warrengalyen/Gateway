@@ -636,7 +636,7 @@ impl FileTransferActivity {
         self.input_mode = InputMode::Explorer;
     }
 
-     /// ### local_scan
+    /// ### local_scan
     ///
     /// Scan current local directory
     fn local_scan(&mut self, path: &Path) {
@@ -1098,7 +1098,6 @@ impl FileTransferActivity {
                                         ))
                                     }
                                 }
-
                             }
                         }
                         ' ' => {
@@ -1700,7 +1699,7 @@ impl FileTransferActivity {
                     PopupType::Input(_, _) => (30, 10),
                     PopupType::Progress(_) => (40, 10),
                     PopupType::Wait(_) => (50, 10),
-                    PopupType::YesNo(_, _, _) => (10, 10),
+                    PopupType::YesNo(_, _, _) => (20, 10),
                 };
                 let popup_area: Rect = self.draw_popup_area(f.size(), width, height);
                 f.render_widget(Clear, popup_area); //this clears out the background
@@ -1850,6 +1849,7 @@ impl FileTransferActivity {
                     .title("Log"),
             )
             .start_corner(Corner::BottomLeft)
+            .highlight_style(Style::default().add_modifier(Modifier::BOLD))
     }
 
     /// ### draw_popup_area
@@ -2060,13 +2060,13 @@ impl FileTransferActivity {
             ])),
         ];
         List::new(cmds)
-        .block(
-            Block::default()
-                .borders(Borders::ALL)
-                .border_style(Style::default())
-                .title("Help"),
-        )
-        .start_corner(Corner::TopLeft)
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .border_style(Style::default())
+                    .title("Help"),
+            )
+            .start_corner(Corner::TopLeft)
     }
 }
 

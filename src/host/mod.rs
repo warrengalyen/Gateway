@@ -660,7 +660,7 @@ mod tests {
         assert!(host.mkdir(PathBuf::from("test_dir").as_path()).is_ok());
         let files: Vec<FsEntry> = host.list_dir();
         assert_eq!(files.len(), 1); // There should be 1 file now
-                                    // Try to re-create directory
+        // Try to re-create directory
         assert!(host.mkdir(PathBuf::from("test_dir").as_path()).is_err());
         // Try abs path
         assert!(host
@@ -677,12 +677,12 @@ mod tests {
         let mut host: Localhost = Localhost::new(PathBuf::from(tmpdir.path())).ok().unwrap();
         let files: Vec<FsEntry> = host.list_dir();
         assert_eq!(files.len(), 1); // There should be 1 file now
-                                    // Remove file
+        // Remove file
         assert!(host.remove(files.get(0).unwrap()).is_ok());
         // There should be 0 files now
         let files: Vec<FsEntry> = host.list_dir();
         assert_eq!(files.len(), 0); // There should be 0 files now
-                                    // Create directory
+        // Create directory
         assert!(host.mkdir(PathBuf::from("test_dir").as_path()).is_ok());
         // Delete directory
         let files: Vec<FsEntry> = host.list_dir();

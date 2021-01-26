@@ -513,8 +513,8 @@ impl Activity for AuthActivity {
             Some(mut ctx) => {
                 let _ = ctx.terminal.clear();
                 Some(ctx)
-            }
-            None => None,
+            },
+            None => None
         }
     }
 }
