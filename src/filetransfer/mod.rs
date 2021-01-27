@@ -142,7 +142,7 @@ pub trait FileTransfer {
     fn rename(&self, file: &FsEntry, dst: &Path) -> Result<(), FileTransferError>;
 
     /// ### stat
-    /// 
+    ///
     /// Stat file and return FsEntry
     fn stat(&self, path: &Path) -> Result<FsEntry, FileTransferError>;
 

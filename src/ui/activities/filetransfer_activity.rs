@@ -153,14 +153,12 @@ impl FileExplorer {
     }
 
     /// ### sort_files_by_name
-    /// 
+    ///
     /// Sort explorer files by their name
     pub fn sort_files_by_name(&mut self) {
-        self.files.sort_by_key(|x: &FsEntry| {
-            match x {
-                FsEntry::Directory(dir) => dir.name.clone(),
-                FsEntry::File(file) => file.name.clone()
-            }
+        self.files.sort_by_key(|x: &FsEntry| match x {
+            FsEntry::Directory(dir) => dir.name.clone(),
+            FsEntry::File(file) => file.name.clone(),
         });
     }
 }
@@ -2254,7 +2252,7 @@ impl Activity for FileTransferActivity {
     /// This function must be called at each tick to refresh the interface
     fn on_draw(&mut self) {
         let mut redraw: bool = false; // Should ui actually be redrawned?
-        // Context must be something
+                                      // Context must be something
         if self.context.is_none() {
             return;
         }

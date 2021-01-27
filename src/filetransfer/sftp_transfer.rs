@@ -641,7 +641,10 @@ mod tests {
         assert!(client.session.is_some());
         assert!(client.sftp.is_some());
         assert_eq!(client.wrkdir, PathBuf::from("/"));
-        let file: FsEntry = client.stat(PathBuf::from("readme.txt").as_path()).ok().unwrap();
+        let file: FsEntry = client
+            .stat(PathBuf::from("readme.txt").as_path())
+            .ok()
+            .unwrap();
         if let FsEntry::File(file) = file {
             assert_eq!(file.abs_path, PathBuf::from("/readme.txt"));
         } else {
