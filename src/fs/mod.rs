@@ -247,7 +247,7 @@ impl std::fmt::Display for FsEntry {
                 };
                 // Get group
                 let group: String = match file.group {
-                    Some(gid) => match get_group_by_gid(gid) { 
+                    Some(gid) => match get_group_by_gid(gid) {
                         Some(group) => group.name().to_string_lossy().to_string(),
                         None => gid.to_string(),
                     },
