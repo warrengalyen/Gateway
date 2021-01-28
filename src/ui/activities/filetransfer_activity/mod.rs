@@ -255,7 +255,6 @@ impl FileTransferActivity {
             transfer_started: Instant::now(),
         }
     }
-
 }
 
 /**
