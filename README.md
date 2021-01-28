@@ -14,6 +14,10 @@ Basically, WinSCP on a terminal
     - [Why Gateway](#why-gateway)
   - [Features](#features)
   - [Installation](#installation)
+      - [Requirements](#requirements)
+      - [Install OpenSSL on Windows](#install-openssl-on-windows)
+        - [Precompiled Binaries](#precompiled-binaries)
+        - [Vcpkg](#vcpkg)
     - [Cargo](#cargo)
     - [Deb / Rpm](#deb--rpm)
     - [Usage](#usage)
@@ -38,7 +42,7 @@ It happens very often to me when using SCP at work to forget the path of a file 
 
 - Different communication protocols
   - SFTP
-  - FTPS
+  - FTP and FTPS
 - Practical user interface to explore the remote machine file system and to select the files to upload and download
 - Written in Rust
 - Easy to extend with new protocols
@@ -47,6 +51,27 @@ It happens very often to me when using SCP at work to forget the path of a file 
 
 If you're considering to install Gateway I want to thank you 💛! I hope this project can be useful for you!  
 If you want to contribute to this project, don't forget to check out our contribute guide. [Read More](CONTRIBUTING.md)
+
+### Requirements
+
+- OpenSSL: only if you want **FTPS** support
+
+#### Install OpenSSL on Windows
+
+To install OpenSSL on Windows you have basically two options:
+
+##### Precompiled Binaries
+
+Download the precompiled binaries from <http://slproweb.com/products/Win32OpenSSL.html> (Non light installation); install to system path and then add to your environmental variables `OPENSSL_DIR=path\to\the\installation\dir`
+
+##### Vcpkg
+
+You can use [vcpkg](https://github.com/Microsoft/vcpkg) to install OpenSSL and then run
+
+```dos
+vcpkg install openssl:x64-windows
+set VCPKG_ROOT=PATH_TO_VCPKG_INSTALLATION
+```
 
 ### Cargo
 
@@ -76,7 +101,8 @@ TODO:
 
 ## Upcoming Features
 
-TODO:
+- **File viewer**: possibility to show in a popup the file content from the explorer.
+- **Replacement of OpenSSL**: OpenSSL is kinda an annoying stuff, especially for Windows. Unfortunately rust-ftp requires OpenSSL to build. I'm working on replacing it on [rust-fpt](https://github.com/wgalyen/rust-ftp/tree/rust-tls). If you want to give me a hand, feel free to contribute.
 
 ---
 
