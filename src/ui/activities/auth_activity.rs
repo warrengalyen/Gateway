@@ -465,7 +465,7 @@ impl Activity for AuthActivity {
                     .margin(2)
                     .constraints(
                         [
-                            Constraint::Length(5),
+                            Constraint::Length(8),
                             Constraint::Length(3),
                             Constraint::Length(3),
                             Constraint::Length(3),

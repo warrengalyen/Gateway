@@ -138,7 +138,8 @@ checksum = "00b0228411908ca8685dba7fc2cdd70ec9990a6e753e89b6ac91a84c40fbaf4b"
 [[package]]
 name = "ftp4"
 version = "4.0.2"
-source = "git+https://github.com/wgalyen/rust-ftp4#1295288166f18be1c9a02d636c529c8ef1fd25ea"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7e03634a7a0e74618f9adf1e088495caa54ea07e72d449813e6439ce8ac9906f"
 dependencies = [
  "chrono",
  "lazy_static",

@@ -33,7 +33,7 @@ use crate::fs::{FsDirectory, FsEntry, FsFile};
 use crate::utils::lstime_to_systime;
 
 // Includes
-use ftp4::openssl::ssl::{SslContext, SslMethod};
+use ftp4::native_tls::TlsConnector;
 use ftp4::FtpStream;
 use regex::Regex;
 use std::io::{Read, Write};
@@ -238,9 +238,14 @@ impl FileTransfer for FtpFileTransfer {
         };
         // If SSL, open secure session
         if self.ftps {
-            let ctx = SslContext::builder(SslMethod::tls()).unwrap();
-            let ctx = ctx.build();
-            stream = match stream.into_secure(ctx) {
+            let ctx = match TlsConnector::builder().danger_accept_invalid_certs(true).danger_accept_invalid_hostnames(true).build() {
+                Ok(tls) => tls,
+                Err(err) => return Err(FileTransferError::new_ex(
+                    FileTransferErrorType::SslError,
+                    format!("{}", err),
+                ))
+            };
+            stream = match stream.into_secure(ctx, address.as_str()) {
                 Ok(s) => s,
                 Err(err) => {
                     return Err(FileTransferError::new_ex(
