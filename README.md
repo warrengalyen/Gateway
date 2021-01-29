@@ -102,7 +102,7 @@ TODO:
 ## Upcoming Features
 
 - **File viewer**: possibility to show in a popup the file content from the explorer.
-- **Replacement of OpenSSL**: OpenSSL is kinda an annoying stuff, especially for Windows. Unfortunately rust-ftp requires OpenSSL to build. I'm working on replacing it on [rust-fpt](https://github.com/wgalyen/rust-ftp/tree/rust-tls). If you want to give me a hand, feel free to contribute.
+- **OpenSSL Replacement**: OpenSSL is kinda an annoying stuff, especially for Windows. Unfortunately rust-ftp requires OpenSSL to build. I'm working on replacing it on [rust-ftp](https://github.com/wgalyen/rust-ftp/tree/rust-tls). If you want to give me a hand, feel free to contribute.
 
 ---
 
