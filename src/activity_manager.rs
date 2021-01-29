@@ -83,6 +83,7 @@ impl ActivityManager {
         protocol: FileTransferProtocol,
         username: Option<String>,
         password: Option<String>,
+        secure: bool
     ) {
         self.ftparams = Some(FileTransferParams {
             address: address,
@@ -90,6 +91,7 @@ impl ActivityManager {
             protocol: protocol,
             username: username,
             password: password,
+            extra_flag_secure: secure,
         });
     }
 
@@ -155,6 +157,7 @@ impl ActivityManager {
                         _ => Some(activity.password.clone()),
                     },
                     protocol: activity.protocol.clone(),
+                    extra_flag_secure: activity.secure,
                 });
                 break;
             }
