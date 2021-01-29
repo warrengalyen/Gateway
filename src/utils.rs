@@ -147,30 +147,42 @@ pub fn time_to_str(time: SystemTime, fmt: &str) -> String {
 }
 
 /// ### lstime_to_systime
-/// 
+///
 /// Convert ls syntax time to System Time
 /// ls time has two possible syntax:
 /// 1. if year is current: %b %d %H:%M (e.g. Nov 5 13:46)
 /// 2. else: %b %d %Y (e.g. Nov 5 2019)
-pub fn lstime_to_systime(tm: &str) -> Result<SystemTime, ParseError> {
-    let datetime: NaiveDateTime = match NaiveDate::parse_from_str(tm, "%b %d %Y") {
-        Ok(date) => { // Case 2.
+pub fn lstime_to_systime(
+    tm: &str,
+    fmt_year: &str,
+    fmt_hours: &str,
+) -> Result<SystemTime, ParseError> {
+    let datetime: NaiveDateTime = match NaiveDate::parse_from_str(tm, fmt_year) {
+        Ok(date) => {
+            // Case 2.
             // Return NaiveDateTime from NaiveDate with time 00:00:00
             date.and_hms(0, 0, 0)
         }
-        Err(_) => { // Might be case 1.
-            // Check if syntax is case 1
-            match NaiveDateTime::parse_from_str(tm, "%b %d %H:%M").err().unwrap() { // This will never succeed
-                ParseError::NotEnough => { // Format is correct
-                    // We need to add Current Year at the end of the string
-                }
-                _ => return Err()
+        Err(_) => {
+            // Might be case 1.
+            // We need to add Current Year at the end of the string
+            let this_year: i32 = Utc::now().year();
+            let date_time_str: String = format!("{} {}", tm, this_year);
+            // Now parse
+            match NaiveDateTime::parse_from_str(
+                date_time_str.as_ref(),
+                format!("{} %Y", fmt_hours).as_ref(),
+            ) {
+                Ok(dt) => dt,
+                Err(err) => return Err(err),
             }
         }
     };
     // Convert datetime to system time
     let mut sys_time: SystemTime = SystemTime::UNIX_EPOCH;
-    Ok(sys_time.checked_add(Duration::from_secs(datetime.timestamp() as u64)).unwrap_or(SystemTime::UNIX_EPOCH)
+    Ok(sys_time
+        .checked_add(Duration::from_secs(datetime.timestamp() as u64))
+        .unwrap_or(SystemTime::UNIX_EPOCH))
 }
 
 #[cfg(test)]
@@ -181,49 +193,70 @@ mod tests {
     #[test]
     fn test_utils_parse_remote_opt() {
         // Base case
-        let result: (String, u16, FileTransferProtocol, Option<String>, bool) = parse_remote_opt(&String::from("172.26.104.1")).ok().unwrap();
+        let result: (String, u16, FileTransferProtocol, Option<String>, bool) =
+            parse_remote_opt(&String::from("172.26.104.1"))
+                .ok()
+                .unwrap();
         assert_eq!(result.0, String::from("172.26.104.1"));
         assert_eq!(result.1, 22);
         assert_eq!(result.2, FileTransferProtocol::Sftp);
         assert!(result.3.is_some());
         assert_eq!(result.4, false);
         // User case
-        let result: (String, u16, FileTransferProtocol, Option<String>, bool) = parse_remote_opt(&String::from("root@172.26.104.1")).ok().unwrap();
+        let result: (String, u16, FileTransferProtocol, Option<String>, bool) =
+            parse_remote_opt(&String::from("root@172.26.104.1"))
+                .ok()
+                .unwrap();
         assert_eq!(result.0, String::from("172.26.104.1"));
         assert_eq!(result.1, 22);
         assert_eq!(result.2, FileTransferProtocol::Sftp);
         assert_eq!(result.3.unwrap(), String::from("root"));
         assert_eq!(result.4, false);
         // User + port
-        let result: (String, u16, FileTransferProtocol, Option<String>, bool) = parse_remote_opt(&String::from("root@172.26.104.1:8022")).ok().unwrap();
+        let result: (String, u16, FileTransferProtocol, Option<String>, bool) =
+            parse_remote_opt(&String::from("root@172.26.104.1:8022"))
+                .ok()
+                .unwrap();
         assert_eq!(result.0, String::from("172.26.104.1"));
         assert_eq!(result.1, 8022);
         assert_eq!(result.2, FileTransferProtocol::Sftp);
         assert_eq!(result.3.unwrap(), String::from("root"));
         assert_eq!(result.4, false);
         // Port only
-        let result: (String, u16, FileTransferProtocol, Option<String>, bool) = parse_remote_opt(&String::from("172.26.104.1:4022")).ok().unwrap();
+        let result: (String, u16, FileTransferProtocol, Option<String>, bool) =
+            parse_remote_opt(&String::from("172.26.104.1:4022"))
+                .ok()
+                .unwrap();
         assert_eq!(result.0, String::from("172.26.104.1"));
         assert_eq!(result.1, 4022);
         assert_eq!(result.2, FileTransferProtocol::Sftp);
         assert!(result.3.is_some());
         assert_eq!(result.4, false);
         // Protocol
-        let result: (String, u16, FileTransferProtocol, Option<String>, bool) = parse_remote_opt(&String::from("ftp://172.26.104.1")).ok().unwrap();
+        let result: (String, u16, FileTransferProtocol, Option<String>, bool) =
+            parse_remote_opt(&String::from("ftp://172.26.104.1"))
+                .ok()
+                .unwrap();
         assert_eq!(result.0, String::from("172.26.104.1"));
         assert_eq!(result.1, 21); // Fallback to ftp default
         assert_eq!(result.2, FileTransferProtocol::Ftp);
         assert!(result.3.is_none()); // Doesn't fall back
         assert_eq!(result.4, false);
         // Protocol + user
-        let result: (String, u16, FileTransferProtocol, Option<String>, bool) = parse_remote_opt(&String::from("ftps://anon@172.26.104.1")).ok().unwrap();
+        let result: (String, u16, FileTransferProtocol, Option<String>, bool) =
+            parse_remote_opt(&String::from("ftps://anon@172.26.104.1"))
+                .ok()
+                .unwrap();
         assert_eq!(result.0, String::from("172.26.104.1"));
         assert_eq!(result.1, 21); // Fallback to ftp default
         assert_eq!(result.2, FileTransferProtocol::Ftp);
         assert_eq!(result.3.unwrap(), String::from("anon"));
         assert_eq!(result.4, true);
         // All together now
-        let result: (String, u16, FileTransferProtocol, Option<String>, bool) = parse_remote_opt(&String::from("ftp://anon@172.26.104.1:8021")).ok().unwrap();
+        let result: (String, u16, FileTransferProtocol, Option<String>, bool) =
+            parse_remote_opt(&String::from("ftp://anon@172.26.104.1:8021"))
+                .ok()
+                .unwrap();
         assert_eq!(result.0, String::from("172.26.104.1"));
         assert_eq!(result.1, 8021); // Fallback to ftp default
         assert_eq!(result.2, FileTransferProtocol::Ftp);
@@ -243,5 +276,42 @@ mod tests {
             time_to_str(system_time, "%Y-%m-%d"),
             String::from("1970-01-01")
         );
+    }
+
+    #[test]
+    fn test_utils_lstime_to_systime() {
+        // Good cases
+        assert_eq!(
+            lstime_to_systime("Nov 5 16:32", "%b %d %Y", "%b %d %H:%M")
+                .ok()
+                .unwrap()
+                .duration_since(SystemTime::UNIX_EPOCH),
+            Duration::from_secs(1604593920)
+        );
+        assert_eq!(
+            lstime_to_systime("Dec 2 21:32", "%b %d %Y", "%b %d %H:%M")
+                .ok()
+                .unwrap()
+                .duration_since(SystemTime::UNIX_EPOCH),
+            Duration::from_secs(1606948320)
+        );
+        assert_eq!(
+            lstime_to_systime("Nov 5 2018", "%b %d %Y", "%b %d %H:%M")
+                .ok()
+                .unwrap()
+                .duration_since(SystemTime::UNIX_EPOCH),
+            Duration::from_secs(1541376000)
+        );
+        assert_eq!(
+            lstime_to_systime("Mar 18 2018", "%b %d %Y", "%b %d %H:%M")
+                .ok()
+                .unwrap()
+                .duration_since(SystemTime::UNIX_EPOCH),
+            Duration::from_secs(1521331200)
+        );
+        // bad cases
+        assert!(lstime_to_systime("Oma 31 2018", "%b %d %Y", "%b %d %H:%M").is_err());
+        assert!(lstime_to_systime("Feb 31 2018", "%b %d %Y", "%b %d %H:%M").is_err());
+        assert!(lstime_to_systime("Feb 15 25:32", "%b %d %Y", "%b %d %H:%M").is_err());
     }
 }
