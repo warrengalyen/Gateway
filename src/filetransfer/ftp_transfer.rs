@@ -25,7 +25,7 @@
 
 // Dependencies
 extern crate chrono;
-extern crate ftp;
+extern crate ftp4;
 extern crate regex;
 
 use super::{FileTransfer, FileTransferError, FileTransferErrorType};
