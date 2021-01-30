@@ -242,9 +242,9 @@ mod tests {
         assert!(result.3.is_none()); // Doesn't fall back
         // Protocol
         let result: (String, u16, FileTransferProtocol, Option<String>) =
-        parse_remote_opt(&String::from("scp://172.26.104.1"))
-            .ok()
-            .unwrap();
+            parse_remote_opt(&String::from("scp://172.26.104.1"))
+                .ok()
+                .unwrap();
         assert_eq!(result.0, String::from("172.26.104.1"));
         assert_eq!(result.1, 22); // Fallback to scp default
         assert_eq!(result.2, FileTransferProtocol::Scp);

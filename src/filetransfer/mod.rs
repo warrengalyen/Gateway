@@ -169,6 +169,7 @@ pub trait FileTransfer {
     /// ### mkdir
     ///
     /// Make directory
+    /// You must return error in case the directory already exists
     fn mkdir(&mut self, dir: &Path) -> Result<(), FileTransferError>;
 
     /// ### remove
@@ -192,13 +193,13 @@ pub trait FileTransfer {
     /// File name is referred to the name of the file as it will be saved
     /// Data contains the file data
     /// Returns file and its size
-    fn send_file(&mut self, file_name: &Path) -> Result<Box<dyn Write>, FileTransferError>;
+    fn send_file(&mut self, local: &FsFile, file_name: &Path) -> Result<Box<dyn Write>, FileTransferError>;
 
     /// ### recv_file
     ///
     /// Receive file from remote with provided name
     /// Returns file and its size
-    fn recv_file(&mut self, file_name: &Path) -> Result<Box<dyn Read>, FileTransferError>;
+    fn recv_file(&mut self, file: &FsFile) -> Result<Box<dyn Read>, FileTransferError>;
 
     /// ### on_sent
     ///
