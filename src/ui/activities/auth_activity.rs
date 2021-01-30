@@ -164,10 +164,10 @@ impl AuthActivity {
                             }
                         }
                         // Check username
-                        // if self.username.len() == 0 {
-                        //     self.popup_message = Some(String::from("Invalid username"));
-                        //     return;
-                        // }
+                        //if self.username.len() == 0 {
+                        //    self.popup_message = Some(String::from("Invalid username"));
+                        //    return;
+                        //}
                         // Everything OK, set enter
                         self.submit = true;
                         self.popup_message =
@@ -308,12 +308,12 @@ impl AuthActivity {
     fn draw_protocol_select(&self) -> Tabs {
         let protocols: Vec<Spans> =
             vec![Spans::from("SFTP"), Spans::from("FTP"), Spans::from("FTPS")];
-            let index: usize = match self.protocol {
-                FileTransferProtocol::Sftp => 0,
-                FileTransferProtocol::Ftp(ftps) => match ftps {
-                    false => 1,
-                    true => 2,
-                }
+        let index: usize = match self.protocol {
+            FileTransferProtocol::Sftp => 0,
+            FileTransferProtocol::Ftp(ftps) => match ftps {
+                false => 1,
+                true => 2,
+            }
         };
         Tabs::new(protocols)
             .block(Block::default().borders(Borders::ALL).title("Protocol"))

@@ -45,7 +45,7 @@ pub enum FileTransferProtocol {
 /// ## FileTransferError
 ///
 /// FileTransferError defines the possible errors available for a file transfer
-
+#[derive(std::fmt::Debug)]
 pub struct FileTransferError {
     code: FileTransferErrorType,
     msg: Option<String>,
@@ -55,6 +55,7 @@ pub struct FileTransferError {
 ///
 /// FileTransferErrorType defines the possible errors available for a file transfer
 #[allow(dead_code)]
+#[derive(std::fmt::Debug)]
 pub enum FileTransferErrorType {
     AuthenticationFailed,
     BadAddress,
@@ -126,6 +127,7 @@ pub trait FileTransfer {
     /// ### connect
     ///
     /// Connect to the remote server
+    /// Can return banner / welcome message on success
 
     fn connect(
         &mut self,
@@ -133,7 +135,7 @@ pub trait FileTransfer {
         port: u16,
         username: Option<String>,
         password: Option<String>,
-    ) -> Result<(), FileTransferError>;
+    ) -> Result<Option<String>, FileTransferError>;
 
     /// ### disconnect
     ///

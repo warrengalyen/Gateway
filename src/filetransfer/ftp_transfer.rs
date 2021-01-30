@@ -225,7 +225,7 @@ impl FileTransfer for FtpFileTransfer {
         port: u16,
         username: Option<String>,
         password: Option<String>,
-    ) -> Result<(), FileTransferError> {
+    ) -> Result<Option<String>, FileTransferError> {
         // Get stream
         let mut stream: FtpStream = match FtpStream::connect(format!("{}:{}", address, port)) {
             Ok(stream) => stream,
@@ -273,7 +273,7 @@ impl FileTransfer for FtpFileTransfer {
         // Set stream
         self.stream = Some(stream);
         // Return OK
-        Ok(())
+        Ok(self.stream.as_ref().unwrap().get_welcome_msg())
     }
 
     /// ### disconnect
@@ -787,6 +787,7 @@ mod tests {
         // Disconnect
         assert!(ftp.disconnect().is_ok());
     }
+
     #[test]
     fn test_filetransfer_ftp_recv() {
         let mut ftp: FtpFileTransfer = FtpFileTransfer::new(false);
@@ -799,6 +800,7 @@ mod tests {
         // Disconnect
         assert!(ftp.disconnect().is_ok());
     }
+
     #[test]
     fn test_filetransfer_ftp_send() {
         let mut ftp: FtpFileTransfer = FtpFileTransfer::new(false);

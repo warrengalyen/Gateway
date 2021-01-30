@@ -19,10 +19,7 @@
 *
 */
 
-use super::{
-    DialogCallback, DialogYesNoOption, FileExplorerTab, FileTransferActivity, FsEntry, InputEvent,
-    InputField, InputMode, LogLevel, OnInputSubmitCallback, PopupType,
-};
+use super::{DialogCallback, DialogYesNoOption, FileExplorerTab, FileTransferActivity, FsEntry, InputEvent, InputField, InputMode, LogLevel, OnInputSubmitCallback, PopupType};
 
 use crossterm::event::{KeyCode, KeyModifiers};
 use std::path::PathBuf;
