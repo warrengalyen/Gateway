@@ -48,7 +48,6 @@ impl FileTransferActivity {
                 .margin(2)
                 .constraints(
                     [
-                        Constraint::Length(8),  // Header
                         Constraint::Length(20), // Explorer
                         Constraint::Length(16), // Log
                     ]
@@ -59,9 +58,7 @@ impl FileTransferActivity {
             let tabs_chunks = Layout::default()
                 .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
                 .direction(Direction::Horizontal)
-                .split(chunks[1]);
-            // Draw header
-            f.render_widget(self.draw_header(), chunks[0]);
+                .split(chunks[0]);
             // Set localhost state
             let mut localhost_state: ListState = ListState::default();
             localhost_state.select(Some(self.local.index));
@@ -89,8 +86,8 @@ impl FileTransferActivity {
             log_state.select(Some(self.log_index));
             // Draw log
             f.render_stateful_widget(
-                self.draw_log_list(chunks[2].width),
-                chunks[2],
+                self.draw_log_list(chunks[1].width),
+                chunks[1],
                 &mut log_state,
             );
             // Draw popup
@@ -137,14 +134,6 @@ impl FileTransferActivity {
             }
         });
         self.context = Some(ctx);
-    }
-
-    /// ### draw_header
-    ///
-    /// Draw header
-    pub(super) fn draw_header(&self) -> Paragraph {
-        Paragraph::new("  _____       _   \n / ____|     | |\n| |  __  __ _| |_ _____      ____ _ _   _ \n| | |_ |/ _` | __/ _ \\ \\ /\\ / / _` | | | |\n| |__| | (_| | ||  __/\\ V  V / (_| | |_| |\n \\_____|\\__,_|\\__\\___| \\_/\\_/ \\__,_|\\__, |\n                                     __/ |\n                                    |___/ ")
-            .style(Style::default().fg(Color::White).add_modifier(Modifier::BOLD))
     }
 
     /// ### draw_local_explorer
