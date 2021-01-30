@@ -70,7 +70,7 @@ Gateway can be started with the following options:
 
 ## Known issues
 
-TODO:
+- Time in explorer is `1 Jan 1970`, but shouldn't be: that's because chrono can't parse date in a different locale. So if your server has a locale different from the one on your machine, it won't be able to parse the date.
 
 ---
 
