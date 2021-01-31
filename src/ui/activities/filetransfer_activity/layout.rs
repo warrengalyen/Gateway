@@ -129,10 +129,9 @@ impl FileTransferActivity {
                         self.draw_popup_wait(txt.clone(), popup_area.width),
                         popup_area,
                     ),
-                    PopupType::YesNo(txt, _, _) => f.render_widget(
-                        self.draw_popup_yesno(txt.clone()),
-                        popup_area,
-                    ),
+                    PopupType::YesNo(txt, _, _) => {
+                        f.render_widget(self.draw_popup_yesno(txt.clone()), popup_area)
+                    }
                 }
             }
         });
@@ -411,11 +410,7 @@ impl FileTransferActivity {
             DialogYesNoOption::No => 1,
         };
         Tabs::new(choices)
-            .block(
-                Block::default()
-                    .borders(Borders::ALL)
-                    .title(text),
-            )
+            .block(Block::default().borders(Borders::ALL).title(text))
             .select(index)
             .style(Style::default())
             .highlight_style(
@@ -435,8 +430,7 @@ impl FileTransferActivity {
                 Span::styled(
                     "<ESC>",
                     Style::default()
-                        .bg(Color::Cyan)
-                        .fg(Color::White)
+                        .fg(Color::Cyan)
                         .add_modifier(Modifier::BOLD),
                 ),
                 Span::raw("           "),
@@ -451,14 +445,23 @@ impl FileTransferActivity {
                         .add_modifier(Modifier::BOLD),
                 ),
                 Span::raw("           "),
-                Span::raw("change input field"),
+                Span::raw("Switch between log tab and explorer"),
+                ])),
+                ListItem::new(Spans::from(vec![
+                    Span::styled(
+                        "<BACKSPACE>",
+                        Style::default()
+                            .fg(Color::Cyan)
+                            .add_modifier(Modifier::BOLD),
+                    ),
+                    Span::raw("     "),
+                    Span::raw("Go to previous directory in stack"),
             ])),
             ListItem::new(Spans::from(vec![
                 Span::styled(
                     "<RIGHT/LEFT>",
                     Style::default()
-                        .bg(Color::Cyan)
-                        .fg(Color::White)
+                        .fg(Color::Cyan)
                         .add_modifier(Modifier::BOLD),
                 ),
                 Span::raw("    "),
@@ -468,8 +471,7 @@ impl FileTransferActivity {
                 Span::styled(
                     "<UP/DOWN>",
                     Style::default()
-                        .bg(Color::Cyan)
-                        .fg(Color::White)
+                        .fg(Color::Cyan)
                         .add_modifier(Modifier::BOLD),
                 ),
                 Span::raw("       "),
@@ -479,8 +481,7 @@ impl FileTransferActivity {
                 Span::styled(
                     "<PGUP/PGDOWN>",
                     Style::default()
-                        .bg(Color::Cyan)
-                        .fg(Color::White)
+                        .fg(Color::Cyan)
                         .add_modifier(Modifier::BOLD),
                 ),
                 Span::raw("   "),
@@ -490,8 +491,7 @@ impl FileTransferActivity {
                 Span::styled(
                     "<ENTER>",
                     Style::default()
-                        .bg(Color::Cyan)
-                        .fg(Color::White)
+                        .fg(Color::Cyan)
                         .add_modifier(Modifier::BOLD),
                 ),
                 Span::raw("         "),
@@ -501,8 +501,7 @@ impl FileTransferActivity {
                 Span::styled(
                     "<SPACE>",
                     Style::default()
-                        .bg(Color::Cyan)
-                        .fg(Color::White)
+                        .fg(Color::Cyan)
                         .add_modifier(Modifier::BOLD),
                 ),
                 Span::raw("         "),
@@ -510,10 +509,19 @@ impl FileTransferActivity {
             ])),
             ListItem::new(Spans::from(vec![
                 Span::styled(
+                    "<CANC>",
+                    Style::default()
+                        .fg(Color::Cyan)
+                        .add_modifier(Modifier::BOLD),
+                ),
+                Span::raw("          "),
+                Span::raw("delete file"),
+            ])),
+            ListItem::new(Spans::from(vec![
+                Span::styled(
                     "<CTRL+D>",
                     Style::default()
-                        .bg(Color::Cyan)
-                        .fg(Color::White)
+                        .fg(Color::Cyan)
                         .add_modifier(Modifier::BOLD),
                 ),
                 Span::raw("        "),
@@ -523,8 +531,7 @@ impl FileTransferActivity {
                 Span::styled(
                     "<CTRL+G>",
                     Style::default()
-                        .bg(Color::Cyan)
-                        .fg(Color::White)
+                        .fg(Color::Cyan)
                         .add_modifier(Modifier::BOLD),
                 ),
                 Span::raw("        "),
@@ -532,10 +539,19 @@ impl FileTransferActivity {
             ])),
             ListItem::new(Spans::from(vec![
                 Span::styled(
+                    "<CTRL+H>",
+                    Style::default()
+                        .fg(Color::Cyan)
+                        .add_modifier(Modifier::BOLD),
+                ),
+                Span::raw("        "),
+                Span::raw("show help"),
+            ])),
+            ListItem::new(Spans::from(vec![
+                Span::styled(
                     "<CTRL+Q>",
                     Style::default()
-                        .bg(Color::Cyan)
-                        .fg(Color::White)
+                        .fg(Color::Cyan)
                         .add_modifier(Modifier::BOLD),
                 ),
                 Span::raw("        "),
@@ -545,8 +561,7 @@ impl FileTransferActivity {
                 Span::styled(
                     "<CTRL+R>",
                     Style::default()
-                        .bg(Color::Cyan)
-                        .fg(Color::White)
+                        .fg(Color::Cyan)
                         .add_modifier(Modifier::BOLD),
                 ),
                 Span::raw("        "),
@@ -556,23 +571,11 @@ impl FileTransferActivity {
                 Span::styled(
                     "<CTRL+U>",
                     Style::default()
-                        .bg(Color::Cyan)
-                        .fg(Color::White)
+                        .fg(Color::Cyan)
                         .add_modifier(Modifier::BOLD),
                 ),
                 Span::raw("        "),
                 Span::raw("go to parent directory"),
-            ])),
-            ListItem::new(Spans::from(vec![
-                Span::styled(
-                    "<CANC>",
-                    Style::default()
-                        .bg(Color::Cyan)
-                        .fg(Color::White)
-                        .add_modifier(Modifier::BOLD),
-                ),
-                Span::raw("          "),
-                Span::raw("delete file"),
             ])),
         ];
         List::new(cmds)
