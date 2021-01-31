@@ -15,22 +15,25 @@ Basically, WinSCP on a terminal
   - [About Gateway](#about-gateway)
     - [Why Gateway](#why-gateway)
   - [Features](#features)
+  - [Usage](#usage)
   - [Installation](#installation)
-    - [Cargo](#cargo)
-    - [Deb / Rpm](#deb--rpm)
-    - [Usage](#usage)
-  - [Documentation](#documentation)
-  - [Known issues](#known-issues)
-  - [Upcoming Features](#upcoming-features)
-  - [Contributions](#contributions)
-  - [Changelog](#changelog)
-  - [License](#license)
+    - [Cargo 🦀](#cargo-)
+    - [Deb package 📦](#deb-package-)
+    - [RPM Package 📦](#rpm-package-)
+    - [Chocolatey 🍫](#chocolatey-)
+    - [Brew 🍻](#brew-)
+  - [Documentation 📚](#documentation-)
+  - [Known issues 🧻](#known-issues-)
+  - [Upcoming Features 🧪](#upcoming-features-)
+  - [Contributions 🤙🏻](#contributions-)
+  - [Changelog ⏳](#changelog-)
+  - [License 📃](#license-)
 
 ---
 
 ## About Gateway
 
-Gateway is basically a porting of WinSCP to terminal. So basically is a terminal tool with an UI to connect to a remote server to retrieve and upload files. It works both on Linux, MacOS and Windows (TODO: double check) and supports SFTP, SCP, FTP and FTPs.
+Gateway is basically a porting of WinSCP to terminal. So basically is a terminal utility with an TUI to connect to a remote server to retrieve and upload files and to interact with the local file system. It works both on **Linux**, **MacOS**, **UNIX** and **Windows** and supports SFTP, SCP, FTP and FTPS.
 
 ### Why Gateway
 
@@ -42,27 +45,12 @@ It happens very often to me when using SCP at work to forget the path of a file 
   - SFTP
   - SCP
   - FTP and FTPS
-- Practical user interface to explore the remote machine file system and to select the files to upload and download
+- Practical user interface to explore and operate on the remote and on the local machine file system
+- Compatible with Windows, Linux, UNIX and MacOS
 - Written in Rust
-- Easy to extend with new protocols
+- Easy to extend with new file transfers protocols
 
-## Installation
-
-If you're considering to install Gateway I want to thank you 💛! I hope this project can be useful for you!  
-If you want to contribute to this project, don't forget to check out our contribute guide. [Read More](CONTRIBUTING.md)
-
-### Cargo
-
-```sh
-# Install gateway through cargo
-cargo install gateway
-```
-
-### Deb / Rpm
-
-Coming soon
-
-### Usage
+## Usage
 
 Gateway can be started with the following options:
 
@@ -70,32 +58,73 @@ Gateway can be started with the following options:
 - `-h, --help` Print help page
 
 ---
+## Installation
 
-## Known issues
+If you're considering to install Gateway I want to thank you 💛! I hope this project can be useful for you!  
+If you want to contribute to this project, don't forget to check out our contribute guide. [Read More](CONTRIBUTING.md)
+
+### Cargo 🦀
+
+```sh
+# Install gateway through cargo
+cargo install gateway
+```
+
+### Deb package 📦
+
+Get `deb` package from [HERE](https://github.com/warrengalyen/Gateway/releases/download/v0.1.0/gateway_0.1.0_amd64.deb)
+or run `wget https://github.com/warrengalyen/Gateway/releases/download/v0.1.0/gateway_0.1.0_amd64.deb`
+
+then install through dpkg:
+
+```sh
+dpkg -i gateway_*.deb
+# Or even better with gdebi
+gdebi gateway_*.deb
+```
+
+### RPM Package 📦
+
+Get `rpm` package from [HERE](https://github.com/warrengalyen/Gateway/releases/download/v0.1.0/gateway-0.1.0-1.x86_64.rpm)
+or run `wget https://github.com/warrengalyen/Gateway/releases/download/v0.1.0/gateway-0.1.0-1.x86_64.rpm`
+
+then install through rpm:
+
+```sh
+rpm -U gateway_*.rpm
+```
+
+### Chocolatey 🍫
+
+### Brew 🍻
+
+---
+
+## Known issues 🧻
 
 - Ftp:
   - Time in explorer is `1 Jan 1970`, but shouldn't be: that's because chrono can't parse date in a different locale. So if your server has a locale different from the one on your machine, it won't be able to parse the date.
 
 ---
 
-## Upcoming Features
+## Upcoming Features 🧪
 
 - **File viewer**: possibility to show in a popup the file content from the explorer.
 ---
 
-## Contributions
+## Contributions 🤙🏻
 
 Contributions are welcome! 😉
 
 If you think you can contribute to Gateway, please follow [Gateway's contributions guide](CONTRIBUTING.md)
 
-## Changelog
+## Changelog ⏳
 
 See the entire changelog [HERE](CHANGELOG.md)
 
 ---
 
-## License
+## License 📃
 
 Licensed under the GNU GPLv3 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 

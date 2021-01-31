@@ -36,3 +36,12 @@ tempfile = "3"
 [[bin]]
 name = "gateway"
 path = "src/main.rs"
+
+[package.metadata.rpm]
+package = "gateway"
+
+[package.metadata.rpm.cargo]
+buildflags = ["--release"]
+
+[package.metadata.rpm.targets]
+gateway = { path = "/usr/bin/gateway" }
