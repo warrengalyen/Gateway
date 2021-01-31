@@ -12,11 +12,11 @@ Basically, WinSCP on a terminal
 ---
 
 - [Gateway](#gateway)
-  - [About Gateway](#about-gateway)
-    - [Why Gateway](#why-gateway)
-  - [Features](#features)
-  - [Usage](#usage)
-  - [Installation](#installation)
+  - [About Gateway 🖥](#about-gateway-)
+    - [Why Gateway 🤔](#why-gateway-)
+  - [Features 🎁](#features-)
+  - [Usage ❓](#usage-)
+  - [Installation ▶](#installation-)
     - [Cargo 🦀](#cargo-)
     - [Deb package 📦](#deb-package-)
     - [RPM Package 📦](#rpm-package-)
@@ -31,15 +31,15 @@ Basically, WinSCP on a terminal
 
 ---
 
-## About Gateway
+## About Gateway 🖥
 
 Gateway is basically a porting of WinSCP to terminal. So basically is a terminal utility with an TUI to connect to a remote server to retrieve and upload files and to interact with the local file system. It works both on **Linux**, **MacOS**, **UNIX** and **Windows** and supports SFTP, SCP, FTP and FTPS.
 
-### Why Gateway
+### Why Gateway 🤔
 
 It happens very often to me when using SCP at work to forget the path of a file on a remote machine, which forces me then to connect through SSH, gather the file path and finally download it through SCP. I could use WinSCP, but I use Linux and I pratically use the terminal for everything, so I wanted something like WinSCP on my terminal.
 
-## Features
+## Features 🎁
 
 - Different communication protocols
   - SFTP
@@ -50,7 +50,7 @@ It happens very often to me when using SCP at work to forget the path of a file 
 - Written in Rust
 - Easy to extend with new file transfers protocols
 
-## Usage
+## Usage ❓
 
 Gateway can be started with the following options:
 
@@ -58,7 +58,7 @@ Gateway can be started with the following options:
 - `-h, --help` Print help page
 
 ---
-## Installation
+## Installation ▶
 
 If you're considering to install Gateway I want to thank you 💛! I hope this project can be useful for you!  
 If you want to contribute to this project, don't forget to check out our contribute guide. [Read More](CONTRIBUTING.md)
