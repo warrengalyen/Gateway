@@ -96,6 +96,22 @@ rpm -U gateway_*.rpm
 
 ### Chocolatey 🍫
 
+You can install Gateway on Windows using [chocolatey](https://chocolatey.org/)
+
+Start PowerShell as administrator and run
+
+```ps
+choco install gateway
+```
+
+Alternatively you can download the ZIP file from [HERE](https://github.com/warrengalyen/Gateway/releases/download/v0.1.0/gateway.0.1.0.nupkg)
+
+and then with PowerShell started with administrator previleges, run:
+
+```ps
+choco install gateway -s .
+```
+
 ### Brew 🍻
 
 ---
