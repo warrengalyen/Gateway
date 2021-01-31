@@ -1,6 +1,8 @@
 # Gateway
 
-[![Build](https://github.com/warrengalyen/Gateway/workflows/Build/badge.svg)](https://github.com/warrengalyen/Build/actions)
+[![Build](https://github.com/warrengalyen/Gateway/workflows/Linux/badge.svg)](https://github.com/warrengalyen/Linux/actions)
+[![Build](https://github.com/warrengalyen/Gateway/workflows/MacOS/badge.svg)](https://github.com/warrengalyen/MacOS/actions)
+[![Build](https://github.com/warrengalyen/Gateway/workflows/Windows/badge.svg)](https://github.com/warrengalyen/Windows/actions)
 
 
 Basically, WinSCP on a terminal
