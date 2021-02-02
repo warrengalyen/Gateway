@@ -8,8 +8,6 @@
 
 ## 0.1.1
 
-Work in progress
-
 - enhancements:
   - password prompt: ask before performing terminal clear
   - file explorer:

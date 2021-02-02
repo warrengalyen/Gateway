@@ -28,7 +28,7 @@ Basically, WinSCP on a terminal
   - [Documentation 📚](#documentation-)
   - [Known issues 🧻](#known-issues-)
   - [Upcoming Features 🧪](#upcoming-features-)
-  - [Contributions 🤙🏻](#contributions-)
+  - [Contributions 🤝](#contributions-)
   - [Changelog ⏳](#changelog-)
   - [License 📃](#license-)
 
@@ -68,8 +68,8 @@ cargo install gateway
 
 ### Deb package 📦
 
-Get `deb` package from [HERE](https://github.com/warrengalyen/Gateway/releases/download/latest/gateway_0.1.0_amd64.deb)
-or run `wget https://github.com/warrengalyen/Gateway/releases/download/latest/gateway_0.1.0_amd64.deb`
+Get `deb` package from [HERE](https://github.com/warrengalyen/Gateway/releases/download/latest/gateway_0.1.2_amd64.deb)
+or run `wget https://github.com/warrengalyen/Gateway/releases/download/latest/gateway_0.1.2_amd64.deb`
 
 then install through dpkg:
 
@@ -81,8 +81,8 @@ gdebi gateway_*.deb
 
 ### RPM Package 📦
 
-Get `rpm` package from [HERE](https://github.com/warrengalyen/Gateway/releases/download/latest/gateway-0.1.0-1.x86_64.rpm)
-or run `wget https://github.com/warrengalyen/Gateway/releases/download/latest/gateway-0.1.0-1.x86_64.rpm`
+Get `rpm` package from [HERE](https://github.com/warrengalyen/Gateway/releases/download/latest/gateway-0.1.2-1.x86_64.rpm)
+or run `wget https://github.com/warrengalyen/Gateway/releases/download/latest/gateway-0.1.2-1.x86_64.rpm`
 
 then install through rpm:
 
@@ -100,7 +100,7 @@ Start PowerShell as administrator and run
 choco install gateway
 ```
 
-Alternatively you can download the ZIP file from [HERE](https://github.com/warrengalyen/Gateway/releases/download/latest/gateway.0.1.0.nupkg)
+Alternatively you can download the ZIP file from [HERE](https://github.com/warrengalyen/Gateway/releases/download/latest/gateway.0.2.0.nupkg)
 
 and then with PowerShell started with administrator previleges, run:
 
@@ -179,7 +179,7 @@ Password can be basically provided through 3 ways when address argument is provi
 | `<D>`         | Make directory                                        |
 | `<G>`         | Go to supplied path                                   |
 | `<H>`         | Show help                                             |
-| `<H>`         | Show info about selected file or directory            |
+| `<I>`         | Show info about selected file or directory            |
 | `<Q>`         | Quit Gateway                                          |
 | `<R>`         | Rename file                                           |
 | `<U>`         | Go to parent directory                                |
@@ -204,7 +204,7 @@ Password can be basically provided through 3 ways when address argument is provi
 - **File viewer**: possibility to show in a popup the file content from the explorer.
 ---
 
-## Contributions 🤙🏻
+## Contributions 🤝
 
 Contributions are welcome! 😉
 
