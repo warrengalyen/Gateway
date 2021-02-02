@@ -490,7 +490,7 @@ impl FileTransferActivity {
                                     )
                                     .as_ref(),
                                 );
-                            }
+                            } 
                             Err(err) => {
                                 self.log(
                                     LogLevel::Error,
