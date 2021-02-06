@@ -185,6 +185,8 @@ Password can be basically provided through 3 ways when address argument is provi
 | `<R>`         | Rename file                                           |
 | `<U>`         | Go to parent directory                                |
 | `<DEL>`       | Delete file                                           |
+| `<DEL>`       | Delete file                                           |
+| `CTRL+C`      | Abort file transfer process                           |
 
 
 ---
