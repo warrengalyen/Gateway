@@ -176,7 +176,7 @@ impl FileTransferActivity {
                     .title(format!(
                         "{}:{} ",
                         hostname,
-                        FileTransferActivity::omit_wrkdir_path(
+                        FileTransferActivity::elide_wrkdir_path(
                             local_wrkdir.as_path(),
                             hostname.as_str(),
                             width
@@ -216,7 +216,7 @@ impl FileTransferActivity {
                     .title(format!(
                         "{}:{} ",
                         self.params.address,
-                        FileTransferActivity::omit_wrkdir_path(
+                        FileTransferActivity::elide_wrkdir_path(
                             remote_wrkdir.as_path(),
                             self.params.address.as_str(),
                             width
@@ -465,204 +465,133 @@ impl FileTransferActivity {
         };
         // Get file_name and fill info list
         let file_name: String = match fsentry {
-            Some(fsentry) => match fsentry {
-                FsEntry::Directory(dir) => {
-                    // Push path
-                    info.push(ListItem::new(Spans::from(vec![
-                        Span::styled("Path: ", Style::default()),
-                        Span::styled(
-                            match &dir.symlink {
-                                Some(symlink) => {
-                                    // Get symlink path
-                                    let symlink_path: PathBuf = symlink.get_abs_path();
-                                    format!(
-                                        "{} => {}",
-                                        dir.abs_path.display(),
-                                        symlink_path.display()
-                                    )
-                                }
-                                None => dir.abs_path.to_string_lossy().to_string(),
-                            },
-                            Style::default()
-                                .fg(Color::LightYellow)
-                                .add_modifier(Modifier::BOLD),
-                        ),
-                    ])));
-                    // Push creation time
-                    info.push(ListItem::new(Spans::from(vec![
-                        Span::styled("Creation time: ", Style::default()),
-                        Span::styled(
-                            time_to_str(dir.creation_time, "%b %d %Y %H:%M:%S"),
-                            Style::default()
-                                .fg(Color::LightGreen)
-                                .add_modifier(Modifier::BOLD),
-                        ),
-                    ])));
-                    // Push Last change
-                    info.push(ListItem::new(Spans::from(vec![
-                        Span::styled("Last change time: ", Style::default()),
-                        Span::styled(
-                            time_to_str(dir.last_change_time, "%b %d %Y %H:%M:%S"),
-                            Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
-                        ),
-                    ])));
-                    // Push Last access
-                    info.push(ListItem::new(Spans::from(vec![
-                        Span::styled("Last access time: ", Style::default()),
-                        Span::styled(
-                            time_to_str(dir.last_access_time, "%b %d %Y %H:%M:%S"),
-                            Style::default()
-                                .fg(Color::LightMagenta)
-                                .add_modifier(Modifier::BOLD),
-                        ),
-                    ])));
-                    // User
-                    #[cfg(any(target_os = "unix", target_os = "macos", target_os = "linux"))]
-                    let username: String = match dir.user {
-                        Some(uid) => match get_user_by_uid(uid) {
-                            Some(user) => user.name().to_string_lossy().to_string(),
-                            None => uid.to_string(),
+            Some(fsentry) => {
+                // Get name and path
+                let abs_path: PathBuf = fsentry.get_abs_path();
+                let name: String = fsentry.get_name();
+                let ctime: String = time_to_str(fsentry.get_creation_time(), "%b %d %Y %H:%M:%S");
+                let atime: String =
+                    time_to_str(fsentry.get_last_access_time(), "%b %d %Y %H:%M:%S");
+                let mtime: String = time_to_str(fsentry.get_creation_time(), "%b %d %Y %H:%M:%S");
+                let (bsize, size): (ByteSize, usize) =
+                    (ByteSize(fsentry.get_size() as u64), fsentry.get_size());
+                let user: Option<u32> = fsentry.get_user();
+                let group: Option<u32> = fsentry.get_group();
+                let real_path: Option<PathBuf> = {
+                    let real_file: FsEntry = fsentry.get_realfile();
+                    match real_file.get_abs_path() != abs_path {
+                        true => Some(real_file.get_abs_path()),
+                        false => None,
+                    }
+                };
+                // Push path
+                info.push(ListItem::new(Spans::from(vec![
+                    Span::styled("Path: ", Style::default()),
+                    Span::styled(
+                        match real_path {
+                            Some(symlink) => {
+                                format!("{} => {}", abs_path.display(), symlink.display())
+                            }
+                            None => abs_path.to_string_lossy().to_string(),
                         },
-                        None => String::from("0"),
-                    };
-                    #[cfg(target_os = "windows")]
-                    let username: String = format!("{}", dir.user.unwrap_or(0));
+                        Style::default()
+                            .fg(Color::LightYellow)
+                            .add_modifier(Modifier::BOLD),
+                    ),
+                ])));
+                // Push file type
+                if let Some(ftype) = fsentry.get_ftype() {
                     info.push(ListItem::new(Spans::from(vec![
-                        Span::styled("User: ", Style::default()),
+                        Span::styled("File type: ", Style::default()),
                         Span::styled(
-                            username,
+                            ftype,
                             Style::default()
-                                .fg(Color::LightRed)
+                                .fg(Color::Green)
                                 .add_modifier(Modifier::BOLD),
                         ),
                     ])));
-                    // Group
-                    #[cfg(any(target_os = "unix", target_os = "macos", target_os = "linux"))]
-                    let group: String = match dir.group {
-                        Some(gid) => match get_group_by_gid(gid) {
-                            Some(group) => group.name().to_string_lossy().to_string(),
-                            None => gid.to_string(),
-                        },
-                        None => String::from("0"),
-                    };
-                    #[cfg(target_os = "windows")]
-                    let group: String = format!("{}", dir.group.unwrap_or(0));
-                    info.push(ListItem::new(Spans::from(vec![
-                        Span::styled("Group: ", Style::default()),
-                        Span::styled(
-                            group,
-                            Style::default()
-                                .fg(Color::LightBlue)
-                                .add_modifier(Modifier::BOLD),
-                        ),
-                    ])));
-                    // Finally return file name
-                    dir.name.clone()
                 }
-                FsEntry::File(file) => {
-                    // Push path
-                    info.push(ListItem::new(Spans::from(vec![
-                        Span::styled("Path: ", Style::default()),
-                        Span::styled(
-                            match &file.symlink {
-                                Some(symlink) => {
-                    // Get symlink path
-                    let symlink_path: PathBuf = symlink.get_abs_path();
-                    format!(
-                        "{} => {}",
-                        file.abs_path.display(),
-                        symlink_path.display()
-                    )
-                                }
-                                None => file.abs_path.to_string_lossy().to_string(),
-                            },
-                            Style::default()
-                                .fg(Color::LightYellow)
-                                .add_modifier(Modifier::BOLD),
-                        ),
-                    ])));
-                    // Push size
-                    info.push(ListItem::new(Spans::from(vec![
-                        Span::styled("Size: ", Style::default()),
-                        Span::styled(
-                            format!("{} ({})", ByteSize(file.size as u64), file.size),
-                            Style::default()
-                                .fg(Color::LightBlue)
-                                .add_modifier(Modifier::BOLD),
-                        ),
-                    ])));
-                    // Push creation time
-                    info.push(ListItem::new(Spans::from(vec![
-                        Span::styled("Creation time: ", Style::default()),
-                        Span::styled(
-                            time_to_str(file.creation_time, "%b %d %Y %H:%M:%S"),
-                            Style::default()
-                                .fg(Color::LightGreen)
-                                .add_modifier(Modifier::BOLD),
-                        ),
-                    ])));
-                    // Push Last change
-                    info.push(ListItem::new(Spans::from(vec![
-                        Span::styled("Last change time: ", Style::default()),
-                        Span::styled(
-                            time_to_str(file.last_change_time, "%b %d %Y %H:%M:%S"),
-                            Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
-                        ),
-                    ])));
-                    // Push Last access
-                    info.push(ListItem::new(Spans::from(vec![
-                        Span::styled("Last access time: ", Style::default()),
-                        Span::styled(
-                            time_to_str(file.last_access_time, "%b %d %Y %H:%M:%S"),
-                            Style::default()
-                                .fg(Color::LightMagenta)
-                                .add_modifier(Modifier::BOLD),
-                        ),
-                    ])));
-                    // User
-                    #[cfg(any(target_os = "unix", target_os = "macos", target_os = "linux"))]
-                    let username: String = match file.user {
-                        Some(uid) => match get_user_by_uid(uid) {
-                            Some(user) => user.name().to_string_lossy().to_string(),
-                            None => uid.to_string(),
-                        },
-                        None => String::from("0"),
-                    };
-                    #[cfg(target_os = "windows")]
-                    let username: String = format!("{}", file.user.unwrap_or(0));
-                    info.push(ListItem::new(Spans::from(vec![
-                        Span::styled("User: ", Style::default()),
-                        Span::styled(
-                            username,
-                            Style::default()
-                                .fg(Color::LightRed)
-                                .add_modifier(Modifier::BOLD),
-                        ),
-                    ])));
-                    // Group
-                    #[cfg(any(target_os = "unix", target_os = "macos", target_os = "linux"))]
-                    let group: String = match file.group {
-                        Some(gid) => match get_group_by_gid(gid) {
-                            Some(group) => group.name().to_string_lossy().to_string(),
-                            None => gid.to_string(),
-                        },
-                        None => String::from("0"),
-                    };
-                    #[cfg(target_os = "windows")]
-                    let group: String = format!("{}", file.group.unwrap_or(0));
-                    info.push(ListItem::new(Spans::from(vec![
-                        Span::styled("Group: ", Style::default()),
-                        Span::styled(
-                            group,
-                            Style::default()
-                                .fg(Color::LightBlue)
-                                .add_modifier(Modifier::BOLD),
-                        ),
-                    ])));
-                    // Finally return file name
-                    file.name.clone()
-                }
-            },
+                // Push size
+                info.push(ListItem::new(Spans::from(vec![
+                    Span::styled("Size: ", Style::default()),
+                    Span::styled(
+                        format!("{} ({})", bsize, size),
+                        Style::default()
+                            .fg(Color::LightBlue)
+                            .add_modifier(Modifier::BOLD),
+                    ),
+                ])));
+                // Push creation time
+                info.push(ListItem::new(Spans::from(vec![
+                    Span::styled("Creation time: ", Style::default()),
+                    Span::styled(
+                        ctime,
+                        Style::default()
+                            .fg(Color::LightGreen)
+                            .add_modifier(Modifier::BOLD),
+                    ),
+                ])));
+                // Push Last change
+                info.push(ListItem::new(Spans::from(vec![
+                    Span::styled("Last change time: ", Style::default()),
+                    Span::styled(
+                        mtime,
+                        Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
+                    ),
+                ])));
+                // Push Last access
+                info.push(ListItem::new(Spans::from(vec![
+                    Span::styled("Last access time: ", Style::default()),
+                    Span::styled(
+                        atime,
+                        Style::default()
+                            .fg(Color::LightMagenta)
+                            .add_modifier(Modifier::BOLD),
+                    ),
+                ])));
+                // User
+                #[cfg(any(target_os = "unix", target_os = "macos", target_os = "linux"))]
+                let username: String = match user {
+                    Some(uid) => match get_user_by_uid(uid) {
+                        Some(user) => user.name().to_string_lossy().to_string(),
+                        None => uid.to_string(),
+                    },
+                    None => String::from("0"),
+                };
+                #[cfg(target_os = "windows")]
+                let username: String = format!("{}", user.unwrap_or(0));
+                info.push(ListItem::new(Spans::from(vec![
+                    Span::styled("User: ", Style::default()),
+                    Span::styled(
+                        username,
+                        Style::default()
+                            .fg(Color::LightRed)
+                            .add_modifier(Modifier::BOLD),
+                    ),
+                ])));
+                // Group
+                #[cfg(any(target_os = "unix", target_os = "macos", target_os = "linux"))]
+                let group: String = match group {
+                    Some(gid) => match get_group_by_gid(gid) {
+                        Some(group) => group.name().to_string_lossy().to_string(),
+                        None => gid.to_string(),
+                    },
+                    None => String::from("0"),
+                };
+                #[cfg(target_os = "windows")]
+                let group: String = format!("{}", group.unwrap_or(0));
+                info.push(ListItem::new(Spans::from(vec![
+                    Span::styled("Group: ", Style::default()),
+                    Span::styled(
+                        group,
+                        Style::default()
+                            .fg(Color::LightBlue)
+                            .add_modifier(Modifier::BOLD),
+                    ),
+                ])));
+                // Finally return file name
+                name
+            }
             None => String::from(""),
         };
         List::new(info)
@@ -700,16 +629,16 @@ impl FileTransferActivity {
                 ),
                 Span::raw("           "),
                 Span::raw("Switch between log tab and explorer"),
-                ])),
-                ListItem::new(Spans::from(vec![
-                    Span::styled(
-                        "<BACKSPACE>",
-                        Style::default()
-                            .fg(Color::Cyan)
-                            .add_modifier(Modifier::BOLD),
-                    ),
-                    Span::raw("     "),
-                    Span::raw("Go to previous directory in stack"),
+            ])),
+            ListItem::new(Spans::from(vec![
+                Span::styled(
+                    "<BACKSPACE>",
+                    Style::default()
+                        .fg(Color::Cyan)
+                        .add_modifier(Modifier::BOLD),
+                ),
+                Span::raw("     "),
+                Span::raw("Go to previous directory in stack"),
             ])),
             ListItem::new(Spans::from(vec![
                 Span::styled(
@@ -853,7 +782,7 @@ impl FileTransferActivity {
     }
 
     /// align_text_center
-    /// 
+    ///
     /// Align text to center for a given width
     fn align_text_center(text: &str, width: u16) -> String {
         let indent_size: usize = match (width as usize) >= text.len() {
@@ -867,36 +796,36 @@ impl FileTransferActivity {
         )
     }
 
-    /// ### omit_wrkdir_path
+    /// ### elide_wrkdir_path
     ///
-    /// Omit working directory path if longer than width + host.len
+    /// Elide working directory path if longer than width + host.len
     /// In this case, the path is formatted to {ANCESTOR[0]}/.../{PARENT[0]}/{BASENAME}
-    fn omit_wrkdir_path(wrkdir: &Path, host: &str, width: u16) -> PathBuf {
+    fn elide_wrkdir_path(wrkdir: &Path, host: &str, width: u16) -> PathBuf {
         let fmt_path: String = format!("{}", wrkdir.display());
         // NOTE: +5 is const
         match fmt_path.len() + host.len() + 5 > width as usize {
             false => PathBuf::from(wrkdir),
             true => {
-                // Omit
+                // Elide
                 let ancestors_len: usize = wrkdir.ancestors().count();
                 let mut ancestors = wrkdir.ancestors();
-                let mut omitted_path: PathBuf = PathBuf::new();
+                let mut elided_path: PathBuf = PathBuf::new();
                 // If ancestors_len's size is bigger than 2, push count - 2
                 if ancestors_len > 2 {
-                    omitted_path.push(ancestors.nth(ancestors_len - 2).unwrap());
+                    elided_path.push(ancestors.nth(ancestors_len - 2).unwrap());
                 }
                 // If ancestors_len is bigger than 3, push '...' and parent too
                 if ancestors_len > 3 {
-                    omitted_path.push("...");
+                    elided_path.push("...");
                     if let Some(parent) = wrkdir.ancestors().nth(1) {
-                        omitted_path.push(parent.file_name().unwrap());
+                        elided_path.push(parent.file_name().unwrap());
                     }
                 }
                 // Push file_name
                 if let Some(name) = wrkdir.file_name() {
-                    omitted_path.push(name);
+                    elided_path.push(name);
                 }
-                omitted_path
+                elided_path
             }
         }
     }
