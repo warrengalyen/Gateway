@@ -2,20 +2,20 @@
 *
 *   Copyright (C) 2021 Warren Galyen
 *
-* 	This file is part of "Gatewat"
+* 	This file is part of "Gateway"
 *
-*   Gatewat is free software: you can redistribute it and/or modify
+*   Gateway is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
 *   the Free Software Foundation, either version 3 of the License, or
 *   (at your option) any later version.
 *
-*   Gatewat is distributed in the hope that it will be useful,
+*   Gateway is distributed in the hope that it will be useful,
 *   but WITHOUT ANY WARRANTY; without even the implied warranty of
 *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 *   GNU General Public License for more details.
 *
 *   You should have received a copy of the GNU General Public License
-*   along with Gatewat.  If not, see <http://www.gnu.org/licenses/>.
+*   along with Gateway.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
 
@@ -221,8 +221,9 @@ impl FileTransferActivity {
                         let files: Vec<FsEntry> = self.local.files.clone(); // Otherwise self is borrowed both as mutable and immutable...
                                                                             // Get file at index
                         if let Some(entry) = files.get(self.local.index) {
-                            // Call upload
-                            self.filetransfer_send(entry, wrkdir.as_path(), None);
+                            let name: String = entry.get_name();
+                            // Call upload; pass realfile, keep link name
+                            self.filetransfer_send(&entry.get_realfile(), wrkdir.as_path(), Some(name));
                         }
                     }
                     _ => { /* Nothing to do */ }
@@ -383,11 +384,13 @@ impl FileTransferActivity {
                         let files: Vec<FsEntry> = self.remote.files.clone(); // Otherwise self is borrowed both as mutable and immutable...
                                                                              // Get file at index
                         if let Some(entry) = files.get(self.remote.index) {
-                            // Call upload
+                            // Preserve name
+                            let name: String = entry.get_name();
+                            // Call upload (use entry realfile; pass previous name)
                             self.filetransfer_recv(
-                                entry,
+                                &entry.get_realfile(),
                                 self.context.as_ref().unwrap().local.pwd().as_path(),
-                                None,
+                                Some(name),
                             );
                         }
                     }
