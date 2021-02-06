@@ -24,7 +24,7 @@
 */
 
 extern crate bytesize;
-#[cfg(any(unix, macos, linux))]
+#[cfg(any(target_os = "unix", target_os = "macos", target_os = "linux"))]
 extern crate users;
 
 use crate::utils::{fmt_pex, time_to_str};
@@ -32,7 +32,7 @@ use crate::utils::{fmt_pex, time_to_str};
 use bytesize::ByteSize;
 use std::path::PathBuf;
 use std::time::SystemTime;
-#[cfg(any(unix, macos, linux))]
+#[cfg(any(target_os = "unix", target_os = "macos", target_os = "linux"))]
 use users::get_user_by_uid;
 
 /// ## FsEntry
@@ -87,7 +87,7 @@ impl std::fmt::Display for FsEntry {
     /// ### fmt_ls
     ///
     /// Format File Entry as `ls` does
-    #[cfg(any(unix, macos, linux))]
+    #[cfg(any(target_os = "unix", target_os = "macos", target_os = "linux"))]
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             FsEntry::Directory(dir) => {
@@ -148,51 +148,7 @@ impl std::fmt::Display for FsEntry {
                 match file.unix_pex {
                     None => mode.push_str("?????????"),
                     Some((owner, group, others)) => {
-                        let read: u8 = (owner >> 2) & 0x1;
-                        let write: u8 = (owner >> 1) & 0x1;
-                        let exec: u8 = owner & 0x1;
-                        mode.push_str(match read {
-                            1 => "r",
-                            _ => "-",
-                        });
-                        mode.push_str(match write {
-                            1 => "w",
-                            _ => "-",
-                        });
-                        mode.push_str(match exec {
-                            1 => "x",
-                            _ => "-",
-                        });
-                        let read: u8 = (group >> 2) & 0x1;
-                        let write: u8 = (group >> 1) & 0x1;
-                        let exec: u8 = group & 0x1;
-                        mode.push_str(match read {
-                            1 => "r",
-                            _ => "-",
-                        });
-                        mode.push_str(match write {
-                            1 => "w",
-                            _ => "-",
-                        });
-                        mode.push_str(match exec {
-                            1 => "x",
-                            _ => "-",
-                        });
-                        let read: u8 = (others >> 2) & 0x1;
-                        let write: u8 = (others >> 1) & 0x1;
-                        let exec: u8 = others & 0x1;
-                        mode.push_str(match read {
-                            1 => "r",
-                            _ => "-",
-                        });
-                        mode.push_str(match write {
-                            1 => "w",
-                            _ => "-",
-                        });
-                        mode.push_str(match exec {
-                            1 => "x",
-                            _ => "-",
-                        });
+                        mode.push_str(fmt_pex(owner, group, others).as_str())
                     }
                 }
                 // Get username
@@ -249,51 +205,7 @@ impl std::fmt::Display for FsEntry {
                 match dir.unix_pex {
                     None => mode.push_str("?????????"),
                     Some((owner, group, others)) => {
-                        let read: u8 = (owner >> 2) & 0x1;
-                        let write: u8 = (owner >> 1) & 0x1;
-                        let exec: u8 = owner & 0x1;
-                        mode.push_str(match read {
-                            1 => "r",
-                            _ => "-",
-                        });
-                        mode.push_str(match write {
-                            1 => "w",
-                            _ => "-",
-                        });
-                        mode.push_str(match exec {
-                            1 => "x",
-                            _ => "-",
-                        });
-                        let read: u8 = (group >> 2) & 0x1;
-                        let write: u8 = (group >> 1) & 0x1;
-                        let exec: u8 = group & 0x1;
-                        mode.push_str(match read {
-                            1 => "r",
-                            _ => "-",
-                        });
-                        mode.push_str(match write {
-                            1 => "w",
-                            _ => "-",
-                        });
-                        mode.push_str(match exec {
-                            1 => "x",
-                            _ => "-",
-                        });
-                        let read: u8 = (others >> 2) & 0x1;
-                        let write: u8 = (others >> 1) & 0x1;
-                        let exec: u8 = others & 0x1;
-                        mode.push_str(match read {
-                            1 => "r",
-                            _ => "-",
-                        });
-                        mode.push_str(match write {
-                            1 => "w",
-                            _ => "-",
-                        });
-                        mode.push_str(match exec {
-                            1 => "x",
-                            _ => "-",
-                        });
+                        mode.push_str(fmt_pex(owner, group, others).as_str())
                     }
                 }
                 // Get username
@@ -334,51 +246,7 @@ impl std::fmt::Display for FsEntry {
                 match file.unix_pex {
                     None => mode.push_str("?????????"),
                     Some((owner, group, others)) => {
-                        let read: u8 = (owner >> 2) & 0x1;
-                        let write: u8 = (owner >> 1) & 0x1;
-                        let exec: u8 = owner & 0x1;
-                        mode.push_str(match read {
-                            1 => "r",
-                            _ => "-",
-                        });
-                        mode.push_str(match write {
-                            1 => "w",
-                            _ => "-",
-                        });
-                        mode.push_str(match exec {
-                            1 => "x",
-                            _ => "-",
-                        });
-                        let read: u8 = (group >> 2) & 0x1;
-                        let write: u8 = (group >> 1) & 0x1;
-                        let exec: u8 = group & 0x1;
-                        mode.push_str(match read {
-                            1 => "r",
-                            _ => "-",
-                        });
-                        mode.push_str(match write {
-                            1 => "w",
-                            _ => "-",
-                        });
-                        mode.push_str(match exec {
-                            1 => "x",
-                            _ => "-",
-                        });
-                        let read: u8 = (others >> 2) & 0x1;
-                        let write: u8 = (others >> 1) & 0x1;
-                        let exec: u8 = others & 0x1;
-                        mode.push_str(match read {
-                            1 => "r",
-                            _ => "-",
-                        });
-                        mode.push_str(match write {
-                            1 => "w",
-                            _ => "-",
-                        });
-                        mode.push_str(match exec {
-                            1 => "x",
-                            _ => "-",
-                        });
+                        mode.push_str(fmt_pex(owner, group, others).as_str())
                     }
                 }
                 // Get username
