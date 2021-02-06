@@ -2,20 +2,20 @@
 *
 *   Copyright (C) 2021 Warren Galyen
 *
-* 	This file is part of "Gateway"
+* 	This file is part of "Gatewat"
 *
-*   Gateway is free software: you can redistribute it and/or modify
+*   Gatewat is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
 *   the Free Software Foundation, either version 3 of the License, or
 *   (at your option) any later version.
 *
-*   Gateway is distributed in the hope that it will be useful,
+*   Gatewat is distributed in the hope that it will be useful,
 *   but WITHOUT ANY WARRANTY; without even the implied warranty of
 *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 *   GNU General Public License for more details.
 *
 *   You should have received a copy of the GNU General Public License
-*   along with Gateway.  If not, see <http://www.gnu.org/licenses/>.
+*   along with Gatewat.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
 
@@ -118,43 +118,10 @@ impl FileTransferActivity {
                             }
                             FsEntry::File(file) => {
                                 // Check if symlink
-                                if let Some(realpath) = &file.symlink {
-                                    // Stat realpath
-                                    match self
-                                        .context
-                                        .as_ref()
-                                        .unwrap()
-                                        .local
-                                        .stat(realpath.as_path())
-                                    {
-                                        Ok(real_file) => {
-                                            // If real file is a directory, enter directory
-                                            if let FsEntry::Directory(real_dir) = real_file {
-                                                self.local_changedir(
-                                                    real_dir.abs_path.as_path(),
-                                                    true,
-                                                )
-                                            }
-                                        }
-                                        Err(err) => {
-                                            self.log(
-                                                LogLevel::Error,
-                                                format!(
-                                                    "Failed to stat file \"{}\": {}",
-                                                    realpath.display(),
-                                                    err
-                                                )
-                                                .as_ref(),
-                                            );
-                                            self.input_mode = InputMode::Popup(PopupType::Alert(
-                                                Color::Red,
-                                                format!(
-                                                    "Failed to stat file \"{}\": {}",
-                                                    realpath.display(),
-                                                    err
-                                                ),
-                                            ));
-                                        }
+                                if let Some(symlink_entry) = &file.symlink {
+                                    // If symlink entry is a directory, go to directory
+                                    if let FsEntry::Directory(dir) = &**symlink_entry {
+                                        self.local_changedir(dir.abs_path.as_path(), true)
                                     }
                                 }
                             }
@@ -319,37 +286,10 @@ impl FileTransferActivity {
                             }
                             FsEntry::File(file) => {
                                 // Check if symlink
-                                if let Some(realpath) = &file.symlink {
-                                    // Stat realpath
-                                    match self.client.stat(realpath.as_path()) {
-                                        Ok(real_file) => {
-                                            // If real file is a directory, enter directory
-                                            if let FsEntry::Directory(real_dir) = real_file {
-                                                self.remote_changedir(
-                                                    real_dir.abs_path.as_path(),
-                                                    true,
-                                                )
-                                            }
-                                        }
-                                        Err(err) => {
-                                            self.log(
-                                                LogLevel::Error,
-                                                format!(
-                                                    "Failed to stat file \"{}\": {}",
-                                                    realpath.display(),
-                                                    err
-                                                )
-                                                .as_ref(),
-                                            );
-                                            self.input_mode = InputMode::Popup(PopupType::Alert(
-                                                Color::Red,
-                                                format!(
-                                                    "Failed to stat file \"{}\": {}",
-                                                    realpath.display(),
-                                                    err
-                                                ),
-                                            ));
-                                        }
+                                if let Some(symlink_entry) = &file.symlink {
+                                    // If symlink entry is a directory, go to directory
+                                    if let FsEntry::Directory(dir) = &**symlink_entry {
+                                        self.remote_changedir(dir.abs_path.as_path(), true)
                                     }
                                 }
                             }
