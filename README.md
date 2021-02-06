@@ -202,7 +202,7 @@ Password can be basically provided through 3 ways when address argument is provi
 
 ## Upcoming Features 🧪
 
-- **File viewer**: possibility to show in a popup the file content from the explorer.
+- **Text viewer**: possibility to open and read file both on remote and on local host; this will also support syntax highlighting.
 ---
 
 ## Contributions 🤝
