@@ -1,15 +1,18 @@
 # Changelog
 
 - [Changelog](#changelog)
+  - [0.1.4](#014)
   - [0.1.3](#012)
   - [0.1.1](#011)
   - [0.1.0](#010)
 
 ---
 
-## 0.2.0
+## 0.1.4
 
-
+- Enhancements:
+  - File explorer:
+    - Fixed color mismatch in local explorer
 
 ## 0.1.3
 
