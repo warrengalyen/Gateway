@@ -11,6 +11,8 @@
 ## 0.1.4
 
 - Enhancements:
+  - File transfer:
+    - Read buffer is now 65536 bytes long
   - File explorer:
     - Fixed color mismatch in local explorer
     - Explorer tabs have now 70% of layout height, while logging area is 30%
