@@ -13,6 +13,8 @@
 - Enhancements:
   - File explorer:
     - Fixed color mismatch in local explorer
+- Bugfix:
+  - Fixed memory vulnerability in Windows version
 
 ## 0.1.3
 
