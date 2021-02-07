@@ -7,6 +7,10 @@
 
 ---
 
+## 0.2.0
+
+
+
 ## 0.1.3
 
 - General performance and code improvements
