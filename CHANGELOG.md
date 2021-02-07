@@ -13,6 +13,7 @@
 - Enhancements:
   - File explorer:
     - Fixed color mismatch in local explorer
+    - Explorer tabs have now 70% of layout height, while logging area is 30%
 - Bugfix:
   - Fixed memory vulnerability in Windows version
 
