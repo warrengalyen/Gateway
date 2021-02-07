@@ -68,8 +68,8 @@ cargo install gateway
 
 ### Deb package 📦
 
-Get `deb` package from [HERE](https://github.com/warrengalyen/Gateway/releases/download/latest/gateway_0.1.3_amd64.deb)
-or run `wget https://github.com/warrengalyen/Gateway/releases/download/latest/gateway_0.1.3_amd64.deb`
+Get `deb` package from [HERE](https://github.com/warrengalyen/Gateway/releases/download/latest/gateway_0.1.4_amd64.deb)
+or run `wget https://github.com/warrengalyen/Gateway/releases/download/latest/gateway_0.1.4_amd64.deb`
 
 then install through dpkg:
 
@@ -81,8 +81,8 @@ gdebi gateway_*.deb
 
 ### RPM Package 📦
 
-Get `rpm` package from [HERE](https://github.com/warrengalyen/Gateway/releases/download/latest/gateway-0.1.3-1.x86_64.rpm)
-or run `wget https://github.com/warrengalyen/Gateway/releases/download/latest/gateway-0.1.3-1.x86_64.rpm`
+Get `rpm` package from [HERE](https://github.com/warrengalyen/Gateway/releases/download/latest/gateway-0.1.4-1.x86_64.rpm)
+or run `wget https://github.com/warrengalyen/Gateway/releases/download/latest/gateway-0.1.4-1.x86_64.rpm`
 
 then install through rpm:
 
@@ -100,7 +100,7 @@ Start PowerShell as administrator and run
 choco install gateway
 ```
 
-Alternatively you can download the ZIP file from [HERE](https://github.com/warrengalyen/Gateway/releases/download/latest/gateway.0.1.3.nupkg)
+Alternatively you can download the ZIP file from [HERE](https://github.com/warrengalyen/Gateway/releases/download/latest/gateway.0.1.4.nupkg)
 
 and then with PowerShell started with administrator previleges, run:
 
