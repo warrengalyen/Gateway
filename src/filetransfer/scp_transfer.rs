@@ -179,8 +179,8 @@ impl ScpFileTransfer {
                     true => self.get_name_and_link(metadata.get(8).unwrap().as_str()),
                     false => (String::from(metadata.get(8).unwrap().as_str()), None),
                 };
-                 // Get symlink
-                 let symlink: Option<Box<FsEntry>> = match symlink_path {
+                // Get symlink
+                let symlink: Option<Box<FsEntry>> = match symlink_path {
                     None => None,
                     Some(p) => match self.stat(p.as_path()) {
                         Ok(e) => Some(Box::new(e)),

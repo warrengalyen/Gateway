@@ -341,7 +341,7 @@ mod tests {
         assert_eq!(entry.get_group(), Some(0));
         assert_eq!(entry.get_unix_pex(), Some((6, 4, 4)));
         assert_eq!(entry.is_symlink(), false);
-        assert_eq!(entry.is_dir(), true);
+        assert_eq!(entry.is_dir(), false);
     }
 
     #[test]

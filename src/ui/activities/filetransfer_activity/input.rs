@@ -453,7 +453,7 @@ impl FileTransferActivity {
                         }
                     }
                     ' ' => {
-                    // Get file and clone (due to mutable / immutable stuff...)
+                        // Get file and clone (due to mutable / immutable stuff...)
                         if self.remote.files.get(self.remote.index).is_some() {
                             let file: FsEntry =
                                 self.remote.files.get(self.remote.index).unwrap().clone();
@@ -648,7 +648,7 @@ impl FileTransferActivity {
     /// ### handle_input_event_mode_popup_progress
     ///
     /// Input event handler for popup alert
-   pub(super) fn handle_input_event_mode_popup_progress(&mut self, ev: &InputEvent) {
+    pub(super) fn handle_input_event_mode_popup_progress(&mut self, ev: &InputEvent) {
         if let InputEvent::Key(key) = ev {
             if let KeyCode::Char(ch) = key.code {
                 // If is 'C' and CTRL
@@ -660,14 +660,14 @@ impl FileTransferActivity {
         }
     }
 
-     /// ### handle_input_event_mode_popup_wait
+    /// ### handle_input_event_mode_popup_wait
     ///
     /// Input event handler for popup alert
     pub(super) fn handle_input_event_mode_popup_wait(&mut self, _ev: &InputEvent) {
         // There's nothing you can do here I guess... maybe ctrl+c in the future idk
     }
 
-   /// ### handle_input_event_mode_popup_yesno
+    /// ### handle_input_event_mode_popup_yesno
     ///
     /// Input event handler for popup alert
     pub(super) fn handle_input_event_mode_popup_yesno(

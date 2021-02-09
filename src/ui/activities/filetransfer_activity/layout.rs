@@ -688,7 +688,7 @@ impl FileTransferActivity {
                         .add_modifier(Modifier::BOLD),
                 ),
                 Span::raw("         "),
-                Span::raw("Ipload/download file"),
+                Span::raw("Upload/download file"),
             ])),
             ListItem::new(Spans::from(vec![
                 Span::styled(

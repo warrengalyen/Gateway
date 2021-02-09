@@ -74,9 +74,9 @@ impl AuthActivity {
                 .split(chunks[0]);
             // Create bookmark chunks
             let bookmark_chunks = Layout::default()
-            .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
-            .direction(Direction::Horizontal)
-            .split(chunks[1]);
+                .constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
+                .direction(Direction::Horizontal)
+                .split(chunks[1]);
             // Draw header
             f.render_widget(self.draw_header(), auth_chunks[0]);
             // Draw input fields
