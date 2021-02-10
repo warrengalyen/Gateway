@@ -1,12 +1,24 @@
 # Changelog
 
 - [Changelog](#changelog)
+  - [0.2.0](#020)
   - [0.1.4](#014)
   - [0.1.3](#012)
   - [0.1.1](#011)
   - [0.1.0](#010)
 
 ---
+
+## 0.2.0
+
+- **Bookmarks**
+  - Bookmarks and recent connections are now displayed in the home page
+  - Bookmarks are saved at
+    - Linux: `/home/alice/.config/gateway/bookmarks.toml`
+    - Windows: `C:\Users\Alice\AppData\Roaming\gateway\bookmarks.toml`
+    - MacOS: `/Users/Alice/Library/Application Support/gateway/bookmarks.toml`
+- Bugfix:
+  - File mode of file on remote is now reported on local file after being downloaded (unix, linux, macos only)
 
 ## 0.1.4
 
