@@ -232,7 +232,6 @@ As said before, bookmarks are saved in your configuration directory along with p
   - Time in explorer is `1 Jan 1970`, but shouldn't be: that's because chrono can't parse date in a different locale. So if your server has a locale different from the one on your machine, it won't be able to parse the date.
   - Some servers don't work: yes, some kinds of ftp server don't work correctly, sometimes it won't display any files in the directories, other times uploading files will fail. Up to date, `vsftpd` is the only one server which I saw working correctly with Gateway. Am I going to solve this? I'd like to, but it's not my fault at all. Unfortunately [rust-ftp](https://github.com/mattnenterprise/rust-ftp) is an abandoned project (up to 2020), indeed I had to patch many stuff by myself. I'll try to solve these issues, but it will take a long time.
 - Sftp:
-  - sftp is much slower than scp: Okay this is an annoying issue, and again: not my fault. It seems there is an issue with [ssh2-rs](https://github.com/alexcrichton/ssh2-rs) library. If you want to stay up to date with the status of this issue, subscribe to [this issue](https://github.com/alexcrichton/ssh2-rs/issues/206)
   - `NoSuchFileOrDirectory` on connect: let me guess, you're running on WSL. I know about this issue and it's a glitch of WSL I guess. Don't worry about it, just move the gateway executable into another PATH location, such as `/usr/bin`.
 
 ---

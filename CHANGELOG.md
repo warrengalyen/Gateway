@@ -11,12 +11,17 @@
 
 ## 0.2.0
 
+*The Bookmarks Update*
+
 - **Bookmarks**
   - Bookmarks and recent connections are now displayed in the home page
   - Bookmarks are saved at
     - Linux: `/home/alice/.config/gateway/bookmarks.toml`
     - Windows: `C:\Users\Alice\AppData\Roaming\gateway\bookmarks.toml`
     - MacOS: `/Users/Alice/Library/Application Support/gateway/bookmarks.toml`
+- Enhancements:
+  - File explorer:
+    - Log how long it took to upload/download a file
 - Bugfix:
   - File mode of file on remote is now reported on local file after being downloaded (unix, linux, macos only)
   - Scp: when username was not provided, it didn't fallback to current username
