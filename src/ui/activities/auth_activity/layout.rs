@@ -4,7 +4,7 @@
 
 /*
 *
-*   Copyright (C) 2020 Warren Galyen -  
+*   Copyright (C) 2021 Warren Galyen
 *
 * 	This file is part of "Gateway"
 *
