@@ -11,7 +11,7 @@
 
 ## 0.2.0
 
-*The Bookmarks Update*
+> The Bookmarks Update
 
 - **Bookmarks**
   - Bookmarks and recent connections are now displayed in the home page
@@ -20,9 +20,12 @@
     - Windows: `C:\Users\Alice\AppData\Roaming\gateway\bookmarks.toml`
     - MacOS: `/Users/Alice/Library/Application Support/gateway/bookmarks.toml`
 - Enhancements:
-  - File explorer:
-    - Log how long it took to upload/download a file and the transfer speed
-    - Display in progress bar the transfer speed (bytes/seconds)
+  - User interface
+    - Collpased borders to make everything more *aesthetic*
+    - Rounded input field boards
+    - File explorer:
+      - Log how long it took to upload/download a file and the transfer speed
+      - Display in progress bar the transfer speed (bytes/seconds)
 - Bugfix:
   - File mode of file on remote is now reported on local file after being downloaded (unix, linux, macos only)
   - Scp: when username was not provided, it didn't fallback to current username
