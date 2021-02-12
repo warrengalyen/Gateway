@@ -238,7 +238,6 @@ As said before, bookmarks are saved in your configuration directory along with p
 
 ## Upcoming Features 🧪
 
-- **Text viewer**: possibility to open and read file both on remote and on local host; this will also support syntax highlighting.
 ---
 
 ## Contributions 🤝
