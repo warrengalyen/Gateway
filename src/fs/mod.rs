@@ -399,7 +399,7 @@ mod tests {
         // root -> child -> target
         let entry_target: FsEntry = FsEntry::Directory(FsDirectory {
             name: String::from("projects"),
-            abs_path: PathBuf::from("/home/wgalyen/projects"),
+            abs_path: PathBuf::from("/home/cvisintin/projects"),
             last_change_time: t_now,
             last_access_time: t_now,
             creation_time: t_now,
@@ -438,10 +438,10 @@ mod tests {
         assert_eq!(entry_root.is_symlink(), true);
         // get real file
         let real_file: FsEntry = entry_root.get_realfile();
-        // real file must be projects in /home/wgalyen
+        // real file must be projects in /home/cvisintin
         assert_eq!(
             real_file.get_abs_path(),
-            PathBuf::from("/home/wgalyen/projects")
+            PathBuf::from("/home/cvisintin/projects")
         );
     }
 
@@ -578,7 +578,7 @@ mod tests {
         let t_now: SystemTime = SystemTime::now();
         let entry: FsEntry = FsEntry::Directory(FsDirectory {
             name: String::from("projects"),
-            abs_path: PathBuf::from("/home/wgalyen/projects"),
+            abs_path: PathBuf::from("/home/cvisintin/projects"),
             last_change_time: t_now,
             last_access_time: t_now,
             creation_time: t_now,
@@ -607,7 +607,7 @@ mod tests {
         // No pex, no user
         let entry: FsEntry = FsEntry::Directory(FsDirectory {
             name: String::from("projects"),
-            abs_path: PathBuf::from("/home/wgalyen/projects"),
+            abs_path: PathBuf::from("/home/cvisintin/projects"),
             last_change_time: t_now,
             last_access_time: t_now,
             creation_time: t_now,

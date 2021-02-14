@@ -123,7 +123,7 @@ mod tests {
         assert_eq!(host.address, String::from("192.168.1.30"));
         assert_eq!(host.port, 22);
         assert_eq!(host.protocol, String::from("SFTP"));
-        assert_eq!(host.username, String::from("wgalyen"));
+        assert_eq!(host.username, String::from("cvisintin"));
         assert_eq!(*host.password.as_ref().unwrap(), String::from("mysecret"));
         let host: &Bookmark = hosts.bookmarks.get("aws-server-prod1").unwrap();
         assert_eq!(host.address, String::from("51.23.67.12"));
@@ -197,7 +197,7 @@ mod tests {
         ISO20201215T094000Z = { address = "172.16.104.10", port = 22, protocol = "SCP", username = "root" }
         "#;
         tmpfile.write_all(file_content.as_bytes()).unwrap();
-        //write!(tmpfile, "[bookmarks]\nraspberrypi2 = {{ address = \"192.168.1.31\", port = 22, protocol = \"SFTP\", username = \"root\" }}\nmsi-estrem = {{ address = \"192.168.1.30\", port = 22, protocol = \"SFTP\", username = \"wgalyen\" }}\naws-server-prod1 = {{ address = \"51.23.67.12\", port = 21, protocol = \"FTPS\", username = \"aws001\" }}\n\n[recents]\nISO20201215T094000Z = {{ address = \"172.16.104.10\", port = 22, protocol = \"SCP\", username = \"root\" }}\n");
+        //write!(tmpfile, "[bookmarks]\nraspberrypi2 = {{ address = \"192.168.1.31\", port = 22, protocol = \"SFTP\", username = \"root\" }}\nmsi-estrem = {{ address = \"192.168.1.30\", port = 22, protocol = \"SFTP\", username = \"cvisintin\" }}\naws-server-prod1 = {{ address = \"51.23.67.12\", port = 21, protocol = \"FTPS\", username = \"aws001\" }}\n\n[recents]\nISO20201215T094000Z = {{ address = \"172.16.104.10\", port = 22, protocol = \"SCP\", username = \"root\" }}\n");
         tmpfile
     }
 

@@ -6,9 +6,9 @@ RUN rustup target add x86_64-unknown-linux-gnu
 # Install dependencies
 RUN apt update && apt install -y rpm
 # Clone repository
-RUN git clone https://github.com/warrengalyen/Gateway.git
+RUN git clone https://github.com/warrengalyen/gateway.git
 # Set workdir to gateway
-WORKDIR /usr/src/Gateway/
+WORKDIR /usr/src/gateway/
 # Install cargo RPM/Deb
 RUN cargo install cargo-deb cargo-rpm
 # Build for x86_64
